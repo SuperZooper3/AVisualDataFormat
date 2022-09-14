@@ -7,6 +7,6 @@ mod tests {
 
     #[test]
     fn works() {
-        assert_eq!(decode::decode("images/printed.png".to_string()), "UUUUUU");
+        assert_eq!(decode::decode("images/printed.png".to_string()), "hello tomas");
     }
 }
