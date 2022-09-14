@@ -3,7 +3,8 @@ pub mod utils;
 
 
 fn main() {
-    let p = "images/printed.png";
-    println!("{}", decode::decode(p.to_string()));
+    println!("{}", decode::decode("images/printed.png".to_string()));
+    println!("{}", decode::decode("images/printeds.png".to_string()));
+    println!("{}", decode::decode("images/printeda.png".to_string()));
 }
 

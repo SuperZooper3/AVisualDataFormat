@@ -29,8 +29,9 @@ pub fn decode(p: String) -> String {
     /* Skip calibration */
     for _ in 0..((2*bar_width) - 1) { row.next(); }
 
+    for _ in 0..(3*bar_width) { row.next_back(); }
+
     /* We do be starting */
-    let mut last_pixel_black = true;
     let mut data: Vec<utils::Data> = Vec::new();
     loop {
         let pixel = row.next();
@@ -39,11 +40,11 @@ pub fn decode(p: String) -> String {
             Some(pixel) => black_status = utils::is_black(pixel),
             None => break
         }
-        if black_status == last_pixel_black {
-            continue
+        data.push(if black_status { utils::Data::Bar } else { utils::Data::Gap });
+        if row.len() >= bar_width - 1 {
+            for _ in 0..(bar_width - 1) { row.next(); } 
         } else {
-            data.push(if black_status { utils::Data::Bar } else { utils::Data::Gap });
-            last_pixel_black = black_status;
+            break;
         }
     }
 

@@ -20,7 +20,8 @@ pub fn interpret(data: Vec<Data>) -> String {
             Data::Gap => string += "0",
         }
     }
-    String::from_utf8(decode_binary(&string).expect("Error decoding binary")).expect("Error decoding to UTF-8")
+    let vector = decode_binary(&string).expect("Error decoding binary");
+    String::from_utf8(vector).expect("Error decoding to UTF-8")
 }
 
 fn decode_binary(s: &str) -> Result<Vec<u8>, ParseIntError> {
