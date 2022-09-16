@@ -16,14 +16,17 @@ def readCode(imgFilename):
 
     # Measure the width of a bar
     #  The start of any barcode is 101, so we can measure the width in pixels of the 0, and then take that as the width of a bar
+    blackStart = -1
     whiteStart = None
     whiteEnd = None
     reader = 0
     while whiteEnd == None:
-        if topRow[reader] == 0 and whiteStart == None:
+        if topRow[reader] == 1 and blackStart == -1:
+            blackStart = reader
+        if blackStart != -1 and topRow[reader] == 0 and whiteStart == None:
             whiteStart = reader
         
-        if topRow[reader] == 1 and whiteStart != None:
+        if blackStart != -1 and topRow[reader] == 1 and whiteStart != None:
             whiteEnd = reader
 
         reader += 1
@@ -37,7 +40,7 @@ def readCode(imgFilename):
 
     currentRegion = topRow[0]
     regionWidth = 0
-    for pixel in topRow:
+    for pixel in topRow[blackStart:]:
         if pixel == currentRegion:
             regionWidth += 1
         else:

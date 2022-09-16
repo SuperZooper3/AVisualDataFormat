@@ -41,8 +41,9 @@ The reader can have it's resilience improved in a couple ways:
    1. This should be done by scanning each image multiple times with differnt scan angles
    2. **Must ensure that there are no backwards readings**. Potentially done by making the start and end strings different and non-symmetrical
 
-## Technical TODOs:
+## Technical TODOs
 
-- [ ] Make the reader able to deal with whitespace before and after the barcode
+- [X] Make the reader able to deal with whitespace before
+- [ ] Deal with whitespace after the barcode
 - [ ] Make the reader scan down an image instead of just assuming the barcode is at the top
 - [ ] Add tollerance calculation to bar counts in regions (scanner)
