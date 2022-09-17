@@ -18,7 +18,10 @@ def codePrint(digits, filename):
     # invert the pixels because 1 is white and 0 is black
     pixels = [[1 - pixel for pixel in row] for row in pixels]
 
-    im = Image.new("1", (digit_width*len(digits),digit_height), color=1)
+    # add a bunch of white above and below
+    pixels = [[1]*digit_width*len(digits)]*50 + pixels + [[1]*digit_width*len(digits)]*50
+
+    im = Image.new("1", (digit_width*len(digits),digit_height+100), color=1)
     im.putdata([pixel for row in pixels for pixel in row])
     im.save(filename)
 

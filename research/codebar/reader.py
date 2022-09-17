@@ -12,51 +12,60 @@ def readCode(imgFilename):
     # Turn the full list of pixels into a 2d array
     pixels = [pixels[i:i+w] for i in range(0, len(pixels), w)]
 
-    topRow = pixels[0]
+    # Insatead of just reading the top row, read the image row by row and print all data found
+    for row in pixels:
+        # Measure the width of a bar
+        #  The start of any barcode is 101, so we can measure the width in pixels of the 0, and then take that as the width of a bar
+        blackStart = -1
+        whiteStart = None
+        whiteEnd = None
+        reader = 0
 
-    # Measure the width of a bar
-    #  The start of any barcode is 101, so we can measure the width in pixels of the 0, and then take that as the width of a bar
-    blackStart = -1
-    whiteStart = None
-    whiteEnd = None
-    reader = 0
-    while whiteEnd == None:
-        if topRow[reader] == 1 and blackStart == -1:
-            blackStart = reader
-        if blackStart != -1 and topRow[reader] == 0 and whiteStart == None:
-            whiteStart = reader
-        
-        if blackStart != -1 and topRow[reader] == 1 and whiteStart != None:
-            whiteEnd = reader
+        doubleBreak = False
+        while whiteEnd == None:
+            if reader >= len(row):
+                doubleBreak = True
+                break
+            if row[reader] == 1 and blackStart == -1:
+                blackStart = reader
+            if blackStart != -1 and row[reader] == 0 and whiteStart == None:
+                whiteStart = reader
+            
+            if blackStart != -1 and row[reader] == 1 and whiteStart != None:
+                whiteEnd = reader
 
-        reader += 1
+            reader += 1
 
-    barWidth = whiteEnd - whiteStart
+        if doubleBreak:
+            #print("Nothing")
+            continue
 
-    # Read the entire barcode from start to finish
-    #   As we read, we'll measure the width of the current region
-    #   Once the region changes, add the width to the data
-    data = []
+        barWidth = whiteEnd - whiteStart
 
-    currentRegion = topRow[0]
-    regionWidth = 0
-    for pixel in topRow[blackStart:]:
-        if pixel == currentRegion:
-            regionWidth += 1
-        else:
-            # Write the region to the data
-            data.extend([currentRegion] * (regionWidth // barWidth))
-            currentRegion = pixel
-            regionWidth = 1
+        # Read the entire barcode from start to finish
+        #   As we read, we'll measure the width of the current region
+        #   Once the region changes, add the width to the data
+        data = []
 
-    # Write the final data
-    data.extend([currentRegion] * (regionWidth // barWidth))
+        currentRegion = row[0]
+        regionWidth = 0
+        for pixel in row[blackStart:]:
+            if pixel == currentRegion:
+                regionWidth += 1
+            else:
+                # Write the region to the data
+                data.extend([currentRegion] * round(regionWidth / barWidth)) # This rounding is to try and get the closest number of bars
+                currentRegion = pixel
+                regionWidth = 1
 
-    # Remove the start and end markers
-    data = data[3:-3]
+        # Write the final data
+        data.extend([currentRegion] * (regionWidth // barWidth))
 
-    # Conver the data into a string, knowing the data is ascii in binary
-    output = decode(data)
+        # Remove the start and end markers
+        data = data[3:-3]
+
+        # Conver the data into a string, knowing the data is ascii in binary
+        output = decode(data)
 
     print(f"Extracted data: {''.join(output)}")
 
