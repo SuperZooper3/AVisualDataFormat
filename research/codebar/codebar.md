@@ -6,17 +6,28 @@ The goal of this research is to get used to the workings of a very basic standar
 
 (For this specification, 1 indicates a black bar, and 0 indicates a white bar)
 
-The specification is very simple, and is as follows:
+The specification is as follows:
 
-- All barcodes start with a start and end string of 101
-- Data is encoded as raw binary of any type
+### Data Layout
+
+- 4 bits of "start region": 1011
+- 2 bits of "data type" :
+  - 00: numeric
+  - 01: ascii
+  - 10: utf-8
+  - 11: raw binary
+- 8 bits of "data length" , encoding a number `n` the length of the data chunks in bytes (big endian)
+- log2(n) bits of "checksum data"
+  - the checksum data is equal to the number of 1s in the data chunks % 2^log2(n)
+- n bytes of "payload data"
+- 4 bits of "end region": 0101
+  - This is so to easily identify reversed codes, as they should always start with 1011
+
+Total size of barcode: 18 + 8n + log2(n) bits, n being the number of bytes in the payload
+
+### Printer / Reader Expectations
+
 - Bars must have a consistent width, within a tolerance of 20%
-
-### Improvement thoughts
-
-- Start is 1011 and end is 0101(no backwards readings)
-- Have 2 bits after the checksum that indicate the data type(0 is extended ascii, 1 is UTF-8, 2 is a straight-up integer(positive), 3 is TBD(maybe negative integer but why tf would you need that in a barcode))
-- For the next part, we define data bits as all bits that aren't the start or end 4 or the checksum bits. Right after the start 1011 bits, we have n checksum bits that are equal to the amount of 1s in the data bits mod 2**n. n is equal the log2 of the amount of data bits, rounded up to the integer
 
 ## The Code
 
