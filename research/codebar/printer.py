@@ -46,7 +46,11 @@ def codePrint(digits, filename, type = "ascii"):
     im = Image.new("1", (digit_width*len(fullData), digit_height), color=1)
     im.putdata([pixel for row in pixels for pixel in row])
     im.save(filename)
+    return im
 
-data = encode(input("Enter a string: "))
+def main():
+    data = encode(input("Enter a string: "))
+    codePrint(data, "printed.png")
 
-codePrint(data, "printed.png")
+if __name__ == "__main__":
+    main()

@@ -121,5 +121,11 @@ def readCode(imgFilename):
         output = decode(outdata)
 
     print(f"Extracted data: {''.join(output)}")
+    return int(''.join(map(str, outdata)), 2).to_bytes(len(outdata) // 8, byteorder='big')
 
-readCode("printed.png")
+
+def main():
+    readCode("printed.png")
+
+if __name__ == "__main__":
+    main()
