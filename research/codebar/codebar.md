@@ -17,7 +17,7 @@ The specification is as follows:
   - 10: utf-8
   - 11: raw binary
 - 8 bits of "data length", encoding a number `n` the length of the data chunks in bytes (big endian)
-- log2(n) bits of "checksum data" (stored in big endian)
+- log2(n)(rounded up to the integer) bits of "checksum data" (stored in big endian)
   - the checksum data is equal to (the number of 1 bits in the data chunks % the number of 0 bits in the data chunks) % n
 - n bytes of "payload data"
 - 4 bits of "end region": 0101

@@ -1,16 +1,16 @@
 # This printer script takes in a binary list of digits and turns them into a space (0) or a bar (1) saved into a file called printed.png
 from encode import encode
 from PIL import Image
-from math import ceil, log2
+from math import ceil
 
 digit_width = 16 # Pixel width of each digit
 digit_height = 200 # Pixel height of each digit
 
 typeIndicatorBits = {
     "num": [0,0],
-    "ascii":[0,1],
-    "utf8":[1,0],
-    "raw":[1,1],
+    "ascii": [0,1],
+    "utf8": [1,0],
+    "raw": [1,1]
 }
 
 def codePrint(digits, filename, type = "ascii"):
@@ -22,12 +22,12 @@ def codePrint(digits, filename, type = "ascii"):
     # Make sure the data will fit inside the max size
     assert(len(digits)//8 < 2**8)
 
-    digitsLengthBits = [int(c) for c in "{:08b}".format(ceil(len(digits)/8))]
+    digitsLengthBits = [int(c) for c in bin(ceil(len(digits)/8))[2:]]
 
     # count the number of "1" bars in the data
-    checksumValue = int(digits.count(1) % digits.count(0)) % ceil(len(digits)/8)
+    checksumValue = (digits.count(1) % digits.count(0)) % ceil(len(digits)/8)
     
-    checksumBits = [int(c) for c in "{0:b}".format(checksumValue)]
+    checksumBits = [int(c) for c in bin(checksumValue)[2:]]
 
     fullData = [1,0,1,1] + typeIndicatorBits[type] + digitsLengthBits + checksumBits + digits + [0,1,0,1]
 
