@@ -16,12 +16,12 @@ The specification is as follows:
   - 01: ascii
   - 10: utf-8
   - 11: raw binary
-- 8 bits of "data length" , encoding a number `n` the length of the data chunks in bytes (big endian)
-- log2(n) bits of "checksum data"
-  - the checksum data is equal to the number of 1s in the data chunks % 2^log2(n)
+- 8 bits of "data length", encoding a number `n` the length of the data chunks in bytes (big endian)
+- log2(n) bits of "checksum data" (stored in big endian)
+  - the checksum data is equal to (the number of 1 bits in the data chunks % the number of 0 bits in the data chunks) % n
 - n bytes of "payload data"
 - 4 bits of "end region": 0101
-  - This is so to easily identify reversed codes, as they should always start with 1011
+  - This is to easily identify reversed codes, as they should always start with 1011
 
 Total size of barcode: 18 + 8n + log2(n) bits, n being the number of bytes in the payload
 
