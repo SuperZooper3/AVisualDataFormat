@@ -22,7 +22,7 @@ def codePrint(digits, filename, type = "ascii"):
     # Make sure the data will fit inside the max size
     assert(len(digits)//8 < 2**8)
 
-    digitsLengthBits = [int(c) for c in bin(ceil(len(digits)/8))[2:]]
+    digitsLengthBits = [int(c) for c in "{:08b}".format(ceil(len(digits)/8))] # Force length to be expressed in 8 bits
 
     # count the number of "1" bars in the data
     checksumValue = (digits.count(1) % digits.count(0)) % ceil(len(digits)/8)
