@@ -2,7 +2,7 @@
 import functools
 import random
 import tempfile
-from typing import Callable
+from typing import Callable, Tuple
 
 from PIL.Image import Image
 from rich import print as rprint
@@ -13,68 +13,81 @@ from rich.tree import Tree
 from printer import codePrint
 from reader import readCode
 
+TESTS_PER_ALTERATION = 10
+
 
 def main():
+    alterations = {
+        "no_alt": ("No alteration", alter_nothing),
+    }
+
     results = {}
     failures = []
     with Progress() as progress:
-        data_tests = progress.add_task("Random Data Tests", total=10)
-        
-        total = progress.add_task("Running tests", total=60)
+        total = progress.add_task("Running all tests", total=TESTS_PER_ALTERATION*len(alterations))
         
         # Start random tests
-        results["no_alt"] = []
-        for i in range(10):
-            alter_fn = functools.partial(alter_nothing)
-            success, data, res = run_test(encode, decode, alter_fn)
-            if success == False:
-                failures.append([
-                    "[bold]No alteration[/]",
-                    data.hex(),
-                    res.hex(),
-                ])
-            
-            results['no_alt'].append([
-                "[bold]No alteration[/]",
-                str(i),
-                "[green]Success[/]" if success else "[red]Failure[/]"
-            ])
+        for k, v in alterations.items():
+            progress_bar = progress.add_task(f"Running tests for [bold]{v[0]}[/]", total=TESTS_PER_ALTERATION)
 
-            progress.advance(data_tests)
-            progress.advance(total)
+            name = k
+            hr_name = v[0]
+            alter_fn = v[1]
+            results[name] = []
+
+            for i in range(10):
+                alter_partial = functools.partial(alter_fn, amount=i)
+                success, data, res = run_test(encode, decode, alter_partial)
+                if success == False:
+                    failures.append([
+                    f"[bold]{hr_name}[/]",
+                        str(i),
+                        data.hex(),
+                        res.hex(),
+                    ])
+
+                results[name].append([
+                    f"[bold]{hr_name}[/]",
+                    str(i),
+                    "[green]Success[/]" if success else "[red]Failure[/]"
+                ])
+
+                progress.advance(progress_bar)
+                progress.advance(total)
+            
+            progress.remove_task(progress_bar)
 
     tree = Tree("Result Summary")
 
     table_res = Table(title="Results")
     table_res.add_column("Alteration")
-    table_res.add_column("Test #")
-    table_res.add_column("Status")
+    table_res.add_column("Alteration #")
+    table_res.add_column("Result")
     all_res = [i for test in results.values() for i in test]
     for result in all_res:
         table_res.add_row(*result)
     
     table_fail = Table(title="Failures")
     table_fail.add_column("Alteration")
+    table_fail.add_column("Alteration #")
     table_fail.add_column("Expected (hex)")
     table_fail.add_column("Got (hex)")
     for failure in failures:
         table_fail.add_row(*failure)
 
-
-    no_alt_success = len([i for i in results['no_alt'] if i[2] == "[green]Success[/]"])
-    tree.add("[bold]No alteration[/]").add(f"[green]{no_alt_success}[/] / {len(results['no_alt'])}")
+    for k, v in alterations.items():
+        successes = len([i for i in results[k] if 'success' in i[2].lower()])
+        tree.add(f"[bold]{v[0]}[/]").add(f"[green]{successes}[/] / {len(results[k])}")
 
     rprint(table_res)
     rprint(table_fail)
-    rprint(tree)
-
-    
+    rprint(tree)    
 
 
 def create_data(n: int = 32) -> bytes:
     return random.randbytes(n)
 
-def run_test(enc_fn: Callable[[bytes], Image], dec_fn: Callable[[Image], bytes], alter_fn: Callable[[Image], Image]) -> bool:
+def run_test(enc_fn: Callable[[bytes], Image], dec_fn: Callable[[Image], bytes], alter_fn: Callable[[Image], Image]) -> Tuple[bool, bytes, bytes]:
     data = create_data()
     # Encode data
     img = enc_fn(data)
@@ -85,7 +98,8 @@ def run_test(enc_fn: Callable[[bytes], Image], dec_fn: Callable[[Image], bytes],
 
     return data == res, data, res
 
-def alter_nothing(img: Image) -> Image:
+# Alter nothing, keep i to keep signature the same
+def alter_nothing(img: Image, amount: int=0) -> Image:
     return img
 
 def alter_rotation(img: Image, amount: int=1) -> Image: ...
