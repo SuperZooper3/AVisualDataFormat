@@ -18,7 +18,7 @@ The specification is as follows:
   - 11: raw binary
 - 8 bits of "data length", encoding a number `n` the length of the data chunks in bytes (big endian)
 - log2(n)(rounded up to the integer) bits of "checksum data" (stored in big endian)
-  - the checksum data is equal to (the number of 1 bits in the data chunks % the number of 0 bits in the data chunks) % n
+  - the checksum data is equal to (the product of (every integer from 1 to 8n raised to the power of the bit at that position(1 being the leftmost bit))) % n
 - n bytes of "payload data"
 - 4 bits of "end region": 0101
   - This is to easily identify reversed codes, as they should always start with 1011
