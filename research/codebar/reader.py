@@ -1,7 +1,7 @@
 # The reader script takes in an image file, and analyses it to find a barcode and return the data encoded in it.
 from decode import decode
 from PIL import Image
-from math import ceil
+from math import floor, log2
 
 dataTypeReverse = {
     "0,0": "num",
@@ -80,7 +80,7 @@ def readCode(imgFilename):
 
         dataLength = int("".join([str(v) for v in data[6:14]]), 2)
 
-        checksumLength = 5 # TODO: Make this dynamic
+        checksumLength = checksumLength = floor(log2(dataLength))+1
 
         # Read the data from the start of the checksum to the ending 4 bits
         #   As we read, we'll measure the width of the current region
@@ -113,7 +113,12 @@ def readCode(imgFilename):
             continue
 
         # check that the checksum is correct
-        if ((outdata.count(1) % outdata.count(0)) % ceil(len(outdata)/8)) != checksum:
+        checksumValue = 0
+        for i in range(dataLength*8):
+            checksumValue += (i+1)**outdata[i]
+        checksumValue %= 2**checksumLength
+
+        if checksumValue != checksum:
             print("Checksum failed")
             continue
 

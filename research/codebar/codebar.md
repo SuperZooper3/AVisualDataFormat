@@ -17,13 +17,13 @@ The specification is as follows:
   - 10: utf-8
   - 11: raw binary
 - 8 bits of "data length", encoding a number `n` the length of the data chunks in bytes (big endian)
-- log2(n)(rounded up to the integer) bits of "checksum data" (stored in big endian)
-  - the checksum data is equal to (the product of (every integer from 1 to 8n raised to the power of the bit at that position(1 being the leftmost bit))) % n
+- floor(log2(n))+1 bits of "checksum data" (stored in big endian)
+  - the checksum data is equal to (the sum of (every integer from 1 to 8n raised to the power of the bit at that position(1 being the leftmost bit))) % 2**(floor(log2(n))+1)
 - n bytes of "payload data"
 - 4 bits of "end region": 0101
   - This is to easily identify reversed codes, as they should always start with 1011
 
-Total size of barcode: 18 + 8n + log2(n) bits, n being the number of bytes in the payload
+Total size of barcode: 18 + 8n + floor(log2(n))+1 bits, n being the number of bytes in the payload
 
 ### Printer / Reader Expectations
 
@@ -49,14 +49,14 @@ Currently the encoder and decoder are made to be able to take in any data and tu
 The reader can have it's resilience improved in a couple ways:
 
 1. Accept whitespace before or after a valid barcode
-   1. This could require informing the reader about the length of the barcode by adding a `length` block to the barcode spec
+   1. This could require informing the reader about the length of the barcode by adding a `length` block to the barcode spec **DONE**
 2. Reduce false positives
-   1. This could be done by adding a checksum to the barcode spec
+   1. This could be done by adding a checksum to the barcode spec **DONE**
 3. Read a code in a real picture
    1. Requires less naively reading the image data, and looking more for black and white instead of just the closest value
 4. Handle rotated barcodes
    1. This should be done by scanning each image multiple times with different scan angles
-   2. **Must ensure that there are no backwards readings**. Potentially done by making the start and end strings different and non-symmetrical
+   2. **Must ensure that there are no backwards readings**. Potentially done by making the start and end strings different and non-symmetrical **DONE**
 
 ## Technical TODOs
 

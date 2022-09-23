@@ -27,10 +27,10 @@ def codePrint(digits, filename, type = "ascii"):
     checksumLength = floor(log2(len(digits)/8))+1
 
     # compute the checksum
-    checksumValue = 1
+    checksumValue = 0
     for i in range(len(digits)):
-        checksumValue *= (i+1)**digits[i]
-    checksumValue %= ceil(len(digits)/8)
+        checksumValue += (i+1)**digits[i]
+    checksumValue %= 2**checksumLength
     
     checksumBits = [int(c) for c in bin(checksumValue)[2:]]
     checksumBits = [0] * (checksumLength - len(checksumBits)) + checksumBits
