@@ -3,6 +3,13 @@ from decode import decode
 from PIL import Image
 from math import floor, log2
 
+# import the opencv library for webcam access
+import cv2
+
+import time
+
+vid = cv2.VideoCapture(0)
+
 debug = False
 
 dataTypeReverse = {
@@ -30,7 +37,8 @@ def readCode(imgFilename):
     # Turn the full list of pixels into a 2d array
     pixels = [pixels[i:i+w] for i in range(0, len(pixels), w)]
 
-    output = "No data found"
+    outputs = set()
+    backwards = False
 
     # Insatead of just reading the top row, read the image row by row and print all data found
     for row in pixels:
@@ -105,6 +113,7 @@ def readCode(imgFilename):
         if data[0:4] != [1,0,1,1]:
             if data[0:4] == [1,0,1,0]:
                 if debug: print("Potential backwards reading")
+                backwards = True
             else:
                 if debug: print("invalid start")
             continue
@@ -124,17 +133,30 @@ def readCode(imgFilename):
             if debug: print("Checksum failed")
             continue
 
+        output = decode(outdata)
         # Conver the data into a string, knowing the data is ascii in binary
-        output = ''.join(decode(outdata))
+        outputs.add(''.join(output))
 
         # Print
         if debug: print("Good data: " + output)
 
-    print(f"Extracted data: {output}")
-    return output
+    if len(outputs) == 0:
+        if backwards == True:
+            print("Potential backwards reading")
+        else:
+            print("No data found")
+    else:
+
+        print(f"Extracted data: {','.join(outputs)}")
+    
+    return outputs
 
 def main():
-    readCode("printed.jpg")
+    while True:
+        ret, frame = vid.read() # Take a picture
+        cv2.imwrite("printed.jpg",frame)
+        #cv2.imshow('frame', frame)
+        readCode("printed.jpg")
 
 if __name__ == "__main__":
     main()
