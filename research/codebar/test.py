@@ -106,13 +106,13 @@ def alter_nothing(img: Image, amount: int=0) -> Image:
     return img
 
 def alter_rotation(img: Image, amount: int=1) -> Image:
-    return img.rotate(amount*25)
+    return img.rotate(amount*25, expand=True)
 
-def alter_noise(): ...
 
 def alter_blur(img: Image, amount: int=1) -> Image:
-    return img.convert("RGB").filter(ImageFilter.GaussianBlur(radius=amount*5))
+    return img.convert("RGB").filter(ImageFilter.GaussianBlur(radius=amount))
 
+def alter_noise(img: Image, amount: int=1) -> Image: ...
 def alter_background(): ...
 
 
@@ -124,7 +124,9 @@ def encode(data: bytes) -> Image:
         return img
 
 def decode(img: Image) -> bytes:
-    with tempfile.NamedTemporaryFile(suffix=".png") as f:
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+        print("+"*80)
+        print(f.name)
         img.save(f)
         r = readCode(f)
         if len(r) == 0:
