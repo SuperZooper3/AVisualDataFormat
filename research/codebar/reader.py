@@ -4,6 +4,7 @@ from PIL import Image
 from math import floor, log2
 
 dataTypeReverse = {
+    "": "Unknown",
     "0,0": "num",
     "0,1": "ascii",
     "1,0": "utf8",
@@ -17,7 +18,7 @@ def readCode(imgFilename):
     pixels = list(im.getdata()) # The basic version only works for files with only the barcode, so taking just the first line works
     
     # Convert all pixels to their closes 0 or 1 value, inverted because 1 is a bar and 0 is a space
-    pixels = [0 if pixel > 128 else 1 for pixel in pixels]
+    pixels = [0 if pixel > 80 else 1 for pixel in pixels] # hand tested conversion threshold
 
     # Save the converted pixels to a new image for debugging
     im = Image.new("1", (w,h), color=1)
@@ -73,12 +74,20 @@ def readCode(imgFilename):
                 currentRegion = pixel
                 regionWidth = 1
 
+        if len(data) < 18:
+            # Not enough data to be a barcode
+            continue
+
         # Write the final data
         data.extend([currentRegion] * round(regionWidth / barWidth))
 
         dataType = dataTypeReverse[",".join([str(v) for v in data[4:6]])]
 
         dataLength = int("".join([str(v) for v in data[6:14]]), 2)
+
+        if dataLength <= 0:
+            # No data
+            continue
 
         checksumLength = floor(log2(dataLength))+1
 
@@ -88,11 +97,14 @@ def readCode(imgFilename):
         dataRangeEnd = dataRangeStart + dataLength * 8
 
         outdata = data[dataRangeStart:dataRangeEnd]
+
        
         # check that it correctly starts with 1011
         if data[0:4] != [1,0,1,1]:
             if data[-1:-5:-1] == [1,0,1,1]:
                 print("Potential backwards reading")
+            else:
+                print("invalid start")
             continue
 
         # check that it correctly ends with 0101.
@@ -111,14 +123,16 @@ def readCode(imgFilename):
             continue
 
         # Conver the data into a string, knowing the data is ascii in binary
-        output = decode(outdata)
+        output = ''.join(decode(outdata))
 
-    print(f"Extracted data: {''.join(output)}")
-    return int(''.join(map(str, outdata)), 2).to_bytes(len(outdata) // 8, byteorder='big')
+        # Print
+        print("Good data: " + output)
 
+    print(f"Extracted data: {output}")
+    return output
 
 def main():
-    readCode("printed.png")
+    readCode("printed.jpg")
 
 if __name__ == "__main__":
     main()

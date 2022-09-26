@@ -23,7 +23,7 @@ The specification is as follows:
 - 4 bits of "end region": 0101
   - This is to easily identify reversed codes, as they should always start with 1011
 
-Total size of barcode: 18 + 8n + floor(log2(n))+1 bits, n being the number of bytes in the payload
+Total size of barcode: 18 + 8n + floor(log2(n)) + 1 bits, n being the number of bytes in the payload
 
 ### Printer / Reader Expectations
 
