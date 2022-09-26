@@ -113,13 +113,13 @@ def encode(data: bytes) -> Image:
     # Create temp file for image, then delete it :)
     with tempfile.NamedTemporaryFile(suffix=".png") as f:
         binary_string = "{:08b}".format(int(data.hex(),16))
-        img = codePrint(list(map(int, binary_string)), f.name, type="raw")
+        img = codePrint(list(map(int, binary_string)), f, type="raw")
         return img
 
 def decode(img: Image) -> bytes:
     with tempfile.NamedTemporaryFile(suffix=".png") as f:
-        img.save(f.name)
-        r = readCode(f.name)
+        img.save(f)
+        r = readCode(f)
         l = r.pop()
         return l
 
