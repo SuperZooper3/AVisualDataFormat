@@ -64,7 +64,7 @@ def readCode(imgFilename):
 
         currentRegion = 1 # Starts with black
         regionWidth = 0
-        for pixel in row[blackStart:blackStart + (4+2+8)*barWidth]:
+        for pixel in row[blackStart:]: # We'll read until the end, and then only interpret the data we need
             if pixel == currentRegion:
                 regionWidth += 1
             else:
@@ -80,35 +80,21 @@ def readCode(imgFilename):
 
         dataLength = int("".join([str(v) for v in data[6:14]]), 2)
 
-        checksumLength = checksumLength = floor(log2(dataLength))+1
-
-        # Read the data from the start of the checksum to the ending 4 bits
-        #   As we read, we'll measure the width of the current region
-        #   Once the region changes, add the width to the data
-
-        currentRegion = 1 # Starts with black
-        regionWidth = 0
-        for pixel in row[blackStart + (4+2+8)*barWidth: blackStart + (4+2+8)*barWidth + (dataLength*8+checksumLength)*barWidth + 4*barWidth]: # start of black data, headers, data w/ checksum, end of data
-            if pixel == currentRegion:
-                regionWidth += 1
-            else:
-                # Write the region to the data
-                data.extend([currentRegion] * round(regionWidth / barWidth)) # This rounding is to try and get the closest number of bars
-                currentRegion = pixel
-                regionWidth = 1
-
-        # Write the final data
-        data.extend([currentRegion] * round(regionWidth / barWidth))
+        checksumLength = floor(log2(dataLength))+1
 
         checksum = int("".join([str(v) for v in data[14:14+checksumLength]]), 2)
 
-        outdata = data[14+checksumLength:14+checksumLength+dataLength*8]
+        dataRangeStart = 14+checksumLength
+        dataRangeEnd = dataRangeStart + dataLength * 8
+
+        outdata = data[dataRangeStart:dataRangeEnd]
+       
         # check that it correctly starts with 1011
         if data[0:4] != [1,0,1,1]:
             continue
 
         # check that it correctly ends with 0101.
-        if data[-4:] != [0,1,0,1]:
+        if data[dataRangeEnd:dataRangeEnd + 4] != [0,1,0,1]:
             print("Invalid end")
             continue
 
