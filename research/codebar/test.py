@@ -84,7 +84,7 @@ def main():
     rprint(tree)    
 
 
-def create_data(n: int = 32) -> bytes:
+def create_data(n: int = 16) -> bytes:
     return random.randbytes(n)
 
 def run_test(enc_fn: Callable[[bytes], Image], dec_fn: Callable[[Image], bytes], alter_fn: Callable[[Image], Image]) -> Tuple[bool, bytes, bytes]:
