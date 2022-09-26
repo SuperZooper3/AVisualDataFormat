@@ -141,8 +141,13 @@ def readCode(imgFilename):
                 continue
 
             # Conver the data into a string, knowing the data is ascii in binary
-            output = decode(outdata)
-            outputs.add(''.join(output))
+            if dataType != "raw":
+                output = decode(outdata)
+                outputs.add(''.join(output))
+            else:
+                s = "".join(map(str, outdata))
+                b = int(s, 2).to_bytes((len(s) + 7) // 8, byteorder='big')
+                outputs.add(b)
             break
 
         # Print
@@ -154,8 +159,10 @@ def readCode(imgFilename):
         else:
             print("No data found")
     else:
-
-        print(f"Extracted data: {','.join(outputs)}")
+        try:
+            print(f"Extracted data: {','.join(outputs)}")
+        except TypeError:
+            print(f"Extracted data may contain bynary data")
     
     return outputs
 
