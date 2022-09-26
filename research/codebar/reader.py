@@ -105,6 +105,8 @@ def readCode(imgFilename):
         outdata = data[14+checksumLength:14+checksumLength+dataLength*8]
         # check that it correctly starts with 1011
         if data[0:4] != [1,0,1,1]:
+            if data[-1:-5:-1] == [1,0,1,1]:
+                print("Potential backwards reading")
             continue
 
         # check that it correctly ends with 0101.
