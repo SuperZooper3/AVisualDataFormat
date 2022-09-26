@@ -3,6 +3,8 @@ from decode import decode
 from PIL import Image
 from math import floor, log2
 
+debug = False
+
 dataTypeReverse = {
     "": "Unknown",
     "0,0": "num",
@@ -101,15 +103,15 @@ def readCode(imgFilename):
        
         # check that it correctly starts with 1011
         if data[0:4] != [1,0,1,1]:
-            if data[-1:-5:-1] == [1,0,1,1]:
-                print("Potential backwards reading")
+            if data[0:4] == [1,0,1,0]:
+                if debug: print("Potential backwards reading")
             else:
-                print("invalid start")
+                if debug: print("invalid start")
             continue
 
         # check that it correctly ends with 0101.
         if data[dataRangeEnd:dataRangeEnd + 4] != [0,1,0,1]:
-            print("Invalid end")
+            if debug: print("Invalid end")
             continue
 
         # check that the checksum is correct
@@ -119,14 +121,14 @@ def readCode(imgFilename):
         checksumValue %= 2**checksumLength
 
         if checksumValue != checksum:
-            print("Checksum failed")
+            if debug: print("Checksum failed")
             continue
 
         # Conver the data into a string, knowing the data is ascii in binary
         output = ''.join(decode(outdata))
 
         # Print
-        print("Good data: " + output)
+        if debug: print("Good data: " + output)
 
     print(f"Extracted data: {output}")
     return output
