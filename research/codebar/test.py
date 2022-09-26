@@ -5,6 +5,7 @@ import tempfile
 from typing import Callable, Tuple
 
 from PIL.Image import Image
+from PIL import ImageFilter
 from rich import print as rprint
 from rich.progress import Progress
 from rich.table import Table
@@ -19,6 +20,8 @@ TESTS_PER_ALTERATION = 10
 def main():
     alterations = {
         "no_alt": ("No alteration", alter_nothing),
+        "rot": ("Rotation", alter_rotation),
+        "blur": ("Blur", alter_blur),
     }
 
     results = {}
@@ -102,10 +105,14 @@ def run_test(enc_fn: Callable[[bytes], Image], dec_fn: Callable[[Image], bytes],
 def alter_nothing(img: Image, amount: int=0) -> Image:
     return img
 
-def alter_rotation(img: Image, amount: int=1) -> Image: ...
-def alter_distortion(): ...
+def alter_rotation(img: Image, amount: int=1) -> Image:
+    return img.rotate(amount*25)
+
 def alter_noise(): ...
-def alter_blur(): ...
+
+def alter_blur(img: Image, amount: int=1) -> Image:
+    return img.convert("RGB").filter(ImageFilter.GaussianBlur(radius=amount*5))
+
 def alter_background(): ...
 
 
@@ -120,6 +127,8 @@ def decode(img: Image) -> bytes:
     with tempfile.NamedTemporaryFile(suffix=".png") as f:
         img.save(f)
         r = readCode(f)
+        if len(r) == 0:
+            return b""
         l = r.pop()
         return l
 
