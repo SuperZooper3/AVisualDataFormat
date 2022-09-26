@@ -8,7 +8,6 @@ import cv2
 
 import time
 
-vid = cv2.VideoCapture(0)
 
 debug = False
 
@@ -161,11 +160,15 @@ def readCode(imgFilename):
     return outputs
 
 def main():
-    while True:
-        ret, frame = vid.read() # Take a picture
-        cv2.imwrite("printed.jpg",frame)
-        #cv2.imshow('frame', frame)
-        readCode("printed.jpg")
+    vid = cv2.VideoCapture(0)
+    try:
+        while True:
+            ret, frame = vid.read() # Take a picture
+            cv2.imwrite("printed.jpg",frame)
+            #cv2.imshow('frame', frame)
+            readCode("printed.jpg")
+    finally:
+        vid.release()
 
 if __name__ == "__main__":
     main()
