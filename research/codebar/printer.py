@@ -1,10 +1,13 @@
 # This printer script takes in a binary list of digits and turns them into a space (0) or a bar (1) saved into a file called printed.png
-from encode import encode
 from PIL import Image
 from math import ceil, floor, log2
 
+from encode import encode_number, encode_string
+
 digit_width = 16 # Pixel width of each digit
 digit_height = 200 # Pixel height of each digit
+
+max_data_size = 2**8
 
 typeIndicatorBits = {
     "num": [0,0],
@@ -20,7 +23,7 @@ def codePrint(digits, filename, type = "ascii"):
     digits = [0] * ((8 - len(digits)) % 8) + digits
 
     # Make sure the data will fit inside the max size
-    assert(len(digits)//8 < 2**8)
+    assert(len(digits)//8 < max_data_size)
 
     digitsLengthBits = [int(c) for c in "{:08b}".format(ceil(len(digits)/8))] # Force length to be expressed in 8 bits
 
@@ -55,8 +58,25 @@ def codePrint(digits, filename, type = "ascii"):
     return im
 
 def main():
-    data = encode(input("Enter a string: "))
-    codePrint(data, "printed.png")
+    type = input("Type of data to print (num, ascii, utf8, raw): ")
+    if type == "num":
+        value = input("Number to print: ")
+        if value.isdigit():
+            value = int(value)
+            assert value < max_data_size**8
+            assert value >= 0
+            data = encode_number(value)
+        else:
+            print("Invalid number")
+            return
+    elif type == "ascii":
+        value = input("String to print: ")
+        data = encode_string(value)
+    else:
+        print("Not supported")
+        return
+    
+    codePrint(data, "printed.png", type=type)
 
 if __name__ == "__main__":
     main()

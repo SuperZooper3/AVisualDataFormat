@@ -53,7 +53,8 @@ The reader can have it's resilience improved in a couple ways:
 2. Reduce false positives
    1. This could be done by adding a checksum to the barcode spec **DONE**
 3. Read a code in a real picture
-   1. Requires less naively reading the image data, and looking more for black and white instead of just the closest value
+   1. Requires less naively reading the image data **done**
+   2. Looking more for black and white instead of just the closest value
 4. Handle rotated barcodes
    1. This should be done by scanning each image multiple times with different scan angles
    2. **Must ensure that there are no backwards readings**. Potentially done by making the start and end strings different and non-symmetrical **DONE**
@@ -61,6 +62,7 @@ The reader can have it's resilience improved in a couple ways:
 ## Technical TODOs
 
 - [X] Make the reader able to deal with whitespace before
-- [ ] Deal with whitespace after the barcode
-- [ ] Make the reader scan down an image instead of just assuming the barcode is at the top
-- [ ] Add tolerance calculation to bar counts in regions (scanner)
+- [X] Deal with whitespace after the barcode
+- [X] Make the reader scan down an image instead of just assuming the barcode is at the top
+- [X] Add tolerance calculation to bar counts in regions (scanner)
+- [ ] Implement differnt data types
