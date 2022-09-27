@@ -22,6 +22,7 @@ def main():
         "no_alt": ("No alteration", alter_nothing),
         "rot": ("Rotation", alter_rotation),
         "blur": ("Blur", alter_blur),
+        "light_rot": ("Light rotation", alter_light_rotation),
     }
 
     results = {}
@@ -108,6 +109,8 @@ def alter_nothing(img: Image, amount: int=0) -> Image:
 def alter_rotation(img: Image, amount: int=1) -> Image:
     return img.rotate(amount*25, expand=True)
 
+def alter_light_rotation(img: Image, amount: int=1) -> Image:
+    return img.rotate(amount*0.5, expand=True)
 
 def alter_blur(img: Image, amount: int=1) -> Image:
     return img.convert("RGB").filter(ImageFilter.GaussianBlur(radius=amount))
