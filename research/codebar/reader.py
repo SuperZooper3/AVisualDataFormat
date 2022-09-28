@@ -8,7 +8,6 @@ import cv2
 
 import time
 
-
 debug = False
 
 dataTypeReverse = {
@@ -140,14 +139,18 @@ def readCode(imgFilename):
                 if debug: print("Checksum failed")
                 continue
 
+            print(dataType)
+
             # Conver the data into a string, knowing the data is ascii in binary
             if dataType != "raw":
-                output = decode(outdata)
-                outputs.add(''.join(output))
-            else:
+                output = decode(outdata,type=dataType)
+                outputs.add(output)
+            
+            elif dataType == "raw":
                 s = "".join(map(str, outdata))
                 b = int(s, 2).to_bytes((len(s) + 7) // 8, byteorder='big')
                 outputs.add(b)
+
             break
 
         # Print
@@ -160,11 +163,14 @@ def readCode(imgFilename):
             print("No data found")
     else:
         try:
-            print(f"Extracted data: {','.join(outputs)}")
+            print(f"Extracted data: {outputs}")
         except TypeError:
             print(f"Extracted data may contain bynary data")
     
     return outputs
+
+readCode("printed.png")
+exit()
 
 def main():
     vid = cv2.VideoCapture(0)
