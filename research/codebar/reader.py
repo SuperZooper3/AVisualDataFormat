@@ -38,7 +38,7 @@ def readCode(imgFilename):
     outputs = set()
     backwards = False
 
-    # Insatead of just reading the top row, read the image row by row and print all data found
+    # Instead of just reading the top row, read the image row by row and print all data found
     for row in pixels:
         blackStarts = []
         currentBlack = False
@@ -163,7 +163,7 @@ def readCode(imgFilename):
         try:
             print(f"Extracted data: {outputs}")
         except TypeError:
-            print(f"Extracted data may contain bynary data")
+            print(f"Extracted data may contain binary data")
     
     return outputs
 

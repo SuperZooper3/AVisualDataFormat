@@ -127,4 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# webcam pictures
 research/codebar/webcam.png
+
+converted.png
