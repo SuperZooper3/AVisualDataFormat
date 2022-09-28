@@ -13,8 +13,8 @@ debug = False
 dataTypeReverse = {
     "": "Unknown",
     "0,0": "num",
-    "0,1": "ascii",
-    "1,0": "utf8",
+    "0,1": "utf8",
+    "1,0": "url",
     "1,1": "raw"
 }
 
@@ -139,8 +139,6 @@ def readCode(imgFilename):
                 if debug: print("Checksum failed")
                 continue
 
-            print(dataType)
-
             # Conver the data into a string, knowing the data is ascii in binary
             if dataType != "raw":
                 output = decode(outdata,type=dataType)
@@ -169,19 +167,35 @@ def readCode(imgFilename):
     
     return outputs
 
-readCode("printed.png")
-exit()
-
 def main():
-    vid = cv2.VideoCapture(0)
-    try:
+    mode = input("Enter 'file' to read from a file, or 'webcam' to read from a webcam: ")
+    if mode == "file":
+        filename = input("Enter the filename: ")
+        readCode(filename)
+    elif mode == "webcam":
+        cam = cv2.VideoCapture(0)
+        cv2.namedWindow("Barcode reader")
+        print("Escape to close")
+        img_counter = 0
         while True:
-            ret, frame = vid.read() # Take a picture
-            cv2.imwrite("printed.jpg",frame)
-            #cv2.imshow('frame', frame)
-            readCode("printed.jpg")
-    finally:
-        vid.release()
+            ret, frame = cam.read()
+            if not ret:
+                print("failed to grab frame")
+                break
+            cv2.imshow("Barcode reader", frame)
+            k = cv2.waitKey(1)
+            if k%256 == 27:
+                # ESC pressed
+                print("Escape hit, closing...")
+                break
+            cv2.imwrite("webcam.png", frame)
+            readCode("webcam.png")
+        cam.release()
+        cv2.destroyAllWindows()
+    else:
+        print("Invalid mode")
+
+    
 
 if __name__ == "__main__":
     main()

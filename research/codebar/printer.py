@@ -2,7 +2,7 @@
 from PIL import Image
 from math import ceil, floor, log2
 
-from encode import encode_number, encode_string
+from encode import encode
 
 digit_width = 16 # Pixel width of each digit
 digit_height = 200 # Pixel height of each digit
@@ -11,8 +11,8 @@ max_data_size = 2**8
 
 typeIndicatorBits = {
     "num": [0,0],
-    "ascii": [0,1],
-    "utf8": [1,0],
+    "utf8": [0,1],
+    "url": [1,0],
     "raw": [1,1]
 }
 
@@ -58,20 +58,20 @@ def codePrint(digits, filename, type = "ascii"):
     return im
 
 def main():
-    type = input("Type of data to print (num, ascii, utf8, raw): ")
+    type = input("Type of data to print (num, utf8, url, raw): ")
     if type == "num":
         value = input("Number to print: ")
         if value.isdigit():
             value = int(value)
             assert value < max_data_size**8
             assert value >= 0
-            data = encode_number(value)
+            data = encode(value,type="num")
         else:
             print("Invalid number")
             return
-    elif type == "ascii":
+    elif type == "utf8":
         value = input("String to print: ")
-        data = encode_string(value)
+        data = encode(value,type = "utf8")
     else:
         print("Not supported")
         return
