@@ -39,7 +39,6 @@ def readCode(imgFilename):
     pixels = [pixels[i:i+w] for i in range(0, len(pixels), w)]
 
     outputs = set()
-    backwards = False
 
     # Instead of just reading the top row, read the image row by row and print all data found
     for row in pixels:
@@ -94,22 +93,22 @@ def readCode(imgFilename):
                     currentRegion = pixel
                     regionWidth = 1
 
+            # Write the final data
+            data.extend([currentRegion] * round(regionWidth / barWidth))
+
             if len(data) < 18:
                 # Not enough data to be a barcode
                 continue
 
-            # Write the final data
-            data.extend([currentRegion] * round(regionWidth / barWidth))
-
             # Before anything, check for the start region
             # check that it correctly starts with 1011
             if data[0:4] != [1,0,1,1]:
-                if data[0:4] == [1,0,1,0]:
+                data = data[::-1]
+                if data[0:4] == [1,0,1,1]:
                     if debug: print("Potential backwards reading")
-                    backwards = True
                 else:
                     if debug: print("invalid start")
-                continue
+                    continue
 
             dataBitsString = ",".join([str(v) for v in data[4:6]])
             if dataBitsString not in dataTypeReverse:
@@ -147,7 +146,7 @@ def readCode(imgFilename):
                 if debug: print("Checksum failed")
                 continue
 
-            # Conver the data into a string, knowing the data is ascii in binary
+            # Convert the data into a string, knowing the data is ascii in binary
             if dataType != "raw":
                 output = decode(outdata,type=dataType)
                 outputs.add(output)
@@ -163,14 +162,8 @@ def readCode(imgFilename):
 
             break
 
-        # Print
-        if debug: print("Good data: " + output)
-
     if len(outputs) == 0:
-        if backwards == True:
-            print("Potential backwards reading")
-        else:
-            print("No data found")
+        print("No data found")
     else:
         try:
             print(f"Extracted data: {outputs}")
