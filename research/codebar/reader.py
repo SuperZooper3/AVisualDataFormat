@@ -103,9 +103,9 @@ def readCode(imgFilename):
             # Before anything, check for the start region
             # check that it correctly starts with 1011
             if data[0:4] != [1,0,1,1]:
-                data = data[::-1]
-                if data[0:4] == [1,0,1,1]:
+                if data[-5:-1:-1] == [1,0,1,1]:
                     if debug: print("Potential backwards reading")
+                    data = data[::-1]
                 else:
                     if debug: print("invalid start")
                     continue
