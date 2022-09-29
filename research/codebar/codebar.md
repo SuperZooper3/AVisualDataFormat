@@ -2,6 +2,19 @@
 
 The goal of this research is to get used to the workings of a very basic standard encoder/ decoder system, very much inspired by the original [codebar](https://en.wikipedia.org/wiki/Codabar).
 
+## Lessons Learned
+
+Since this was a research project, the main goal was to build skills and knowledge on how basic visual data encoding works. The following are the main lessons learned:
+
+- Filters are crucial to get right if we want to be able to analyze images correctly
+  - But basic filtering isn't enough, smoothing and other mathematical operations are needed to get the best results
+- Processing data in a more global way is better than naively processing local data
+  - Ex: to reduce errors, it would be better to scan chunks of rows at once rather than just single pixel slices
+- Strict data layouts make implementation easier
+  - The handoff is that there can be alot of wasted data
+- Checksums / error correction codes need to have very large redundancy to be effective
+  - In our senario, checksums were simple enough than many random images had "valid" barcodes
+
 ## The Specification
 
 (For this specification, 1 indicates a black bar, and 0 indicates a white bar)
@@ -58,11 +71,3 @@ The reader can have it's resilience improved in a couple ways:
 4. Handle rotated barcodes
    1. This should be done by scanning each image multiple times with different scan angles
    2. **Must ensure that there are no backwards readings**. Potentially done by making the start and end strings different and non-symmetrical **DONE**
-
-## Technical TODOs
-
-- [X] Make the reader able to deal with whitespace before
-- [X] Deal with whitespace after the barcode
-- [X] Make the reader scan down an image instead of just assuming the barcode is at the top
-- [X] Add tolerance calculation to bar counts in regions (scanner)
-- [ ] Implement differnt data types
