@@ -72,8 +72,14 @@ def main():
     elif type == "utf8":
         value = input("String to print: ")
         data = encode(value,type = "utf8")
+    elif type == "url":
+        value = input("URL to print: ")
+        data = encode(value,type = "url")
+    elif type == "raw":
+        value = input("Binary data to print (format: 10100101010101) **WILL BE PADDED TO THE NEAREST BYTE**: ")
+        data = encode(value,type = "raw")
     else:
-        print("Not supported")
+        print("Invalid type")
         return
     
     codePrint(data, "printed.png", type=type)

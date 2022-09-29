@@ -1,7 +1,7 @@
 # Decoder function for the codebar
 
 def decode(data: list, type = "utf8"):
-    if type == "utf8": # if we have a string (default)
+    if type == "utf8" or type == "url": # if we have a string (default)
         # turn data into a string
         s = "".join(map(str, data))
         # turn the string into bytes objects
@@ -15,4 +15,4 @@ def decode(data: list, type = "utf8"):
     if type == "num": # if we have a number
         return int("".join([str(m) for m in data]),2)
 
-    raise NotImplementedError("Decode type not implemented")
+    raise NotImplementedError(f"Decode type not implemented {type}")

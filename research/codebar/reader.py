@@ -1,25 +1,28 @@
 # The reader script takes in an image file, and analyses it to find a barcode and return the data encoded in it.
+from urllib import request
 from decode import decode
 from PIL import Image
 from math import floor, log2
 
 # import the opencv library for webcam access
 import cv2
-
+import webbrowser
 import time
 
 debug = False
 
 dataTypeReverse = {
-    "": "Unknown",
     "0,0": "num",
     "0,1": "utf8",
     "1,0": "url",
     "1,1": "raw"
 }
 
+openedUrls = []
 
 def readCode(imgFilename):
+    global openedUrls
+
     im = Image.open(imgFilename).convert("L")
     w,h = im.size
     pixels = list(im.getdata()) # The basic version only works for files with only the barcode, so taking just the first line works
@@ -98,7 +101,22 @@ def readCode(imgFilename):
             # Write the final data
             data.extend([currentRegion] * round(regionWidth / barWidth))
 
-            dataType = dataTypeReverse[",".join([str(v) for v in data[4:6]])]
+            # Before anything, check for the start region
+            # check that it correctly starts with 1011
+            if data[0:4] != [1,0,1,1]:
+                if data[0:4] == [1,0,1,0]:
+                    if debug: print("Potential backwards reading")
+                    backwards = True
+                else:
+                    if debug: print("invalid start")
+                continue
+
+            dataBitsString = ",".join([str(v) for v in data[4:6]])
+            if dataBitsString not in dataTypeReverse:
+                # print("Invalid data type")
+                continue
+            
+            dataType = dataTypeReverse[dataBitsString]
             
             dataLength = int("".join([str(v) for v in data[6:14]]), 2)
             if dataLength <= 0:
@@ -113,16 +131,6 @@ def readCode(imgFilename):
             dataRangeEnd = dataRangeStart + dataLength * 8
 
             outdata = data[dataRangeStart:dataRangeEnd]
-
-        
-            # check that it correctly starts with 1011
-            if data[0:4] != [1,0,1,1]:
-                if data[0:4] == [1,0,1,0]:
-                    if debug: print("Potential backwards reading")
-                    backwards = True
-                else:
-                    if debug: print("invalid start")
-                continue
 
             # check that it correctly ends with 0101.
             if data[dataRangeEnd:dataRangeEnd + 4] != [0,1,0,1]:
@@ -143,6 +151,10 @@ def readCode(imgFilename):
             if dataType != "raw":
                 output = decode(outdata,type=dataType)
                 outputs.add(output)
+                if dataType == "url":
+                    if output not in openedUrls:
+                        webbrowser.open(output)
+                        openedUrls.append(output)
             
             elif dataType == "raw":
                 s = "".join(map(str, outdata))
@@ -194,7 +206,6 @@ def main():
         cv2.destroyAllWindows()
     else:
         print("Invalid mode")
-
     
 
 if __name__ == "__main__":
