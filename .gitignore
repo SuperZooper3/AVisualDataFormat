@@ -130,5 +130,5 @@ dmypy.json
 
 # webcam pictures
 research/codebar/webcam.png
-
+*.png
 converted.png
