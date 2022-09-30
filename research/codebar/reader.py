@@ -37,7 +37,7 @@ def readCode(imgFilename):
         pixels = list(im.getdata()) # The basic version only works for files with only the barcode, so taking just the first line works
         
         # Convert all pixels to their closes 0 or 1 value, inverted because 1 is a bar and 0 is a space
-        pixels = [0 if pixel > 80 else 1 for pixel in pixels] # hand tested conversion threshold
+        pixels = [0 if pixel > 127 else 1 for pixel in pixels] # hand tested conversion threshold
 
         # Save the converted pixels to a new image for debugging
         im = Image.new("1", (w,h), color=1)

@@ -39,7 +39,7 @@ def main():
             alter_fn = v[1]
             results[name] = []
 
-            for i in range(10):
+            for i in range(TESTS_PER_ALTERATION):
                 alter_partial = functools.partial(alter_fn, amount=i)
                 success, data, res = run_test(encode, decode, alter_partial)
                 if success == False:
@@ -127,15 +127,14 @@ def encode(data: bytes) -> Image:
         return img
 
 def decode(img: Image) -> bytes:
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+    with tempfile.NamedTemporaryFile(suffix=".png") as f:
         print("+"*80)
         print(f.name)
         img.save(f)
         r = readCode(f)
-        if len(r) == 0:
+        if r is None:
             return b""
-        l = r.pop()
-        return l
+        return r
 
 
 if __name__ == "__main__":
