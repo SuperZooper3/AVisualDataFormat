@@ -1,5 +1,4 @@
 # The reader script takes in an image file, and analyses it to find a barcode and return the data encoded in it.
-from urllib import request
 from decode import decode
 from PIL import Image
 from math import floor, log2
@@ -7,7 +6,6 @@ from math import floor, log2
 # import the opencv library for webcam access
 import cv2
 import webbrowser
-import time
 
 debug = False
 
