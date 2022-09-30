@@ -11,9 +11,10 @@ Since this was a research project, the main goal was to build skills and knowled
 - Processing data in a more global way is better than naively processing local data
   - Ex: to reduce errors, it would be better to scan chunks of rows at once rather than just single pixel slices
 - Strict data layouts make implementation easier
-  - The handoff is that there can be alot of wasted data
+  - The handoff is that there can be a lot of wasted data
 - Checksums / error correction codes need to have very large redundancy to be effective
-  - In our senario, checksums were simple enough than many random images had "valid" barcodes
+  - In our scenario, checksums were simple enough than many random images had "valid" barcodes
+- Rotating an image to scan it multiple times is computationally expensive
 
 ## The Specification
 
@@ -69,5 +70,5 @@ The reader can have it's resilience improved in a couple ways:
    1. Requires less naively reading the image data **done**
    2. Looking more for black and white instead of just the closest value
 4. Handle rotated barcodes
-   1. This should be done by scanning each image multiple times with different scan angles
+   1. This should be done by scanning each image multiple times with different scan angles **DONE**
    2. **Must ensure that there are no backwards readings**. Potentially done by making the start and end strings different and non-symmetrical **DONE**
