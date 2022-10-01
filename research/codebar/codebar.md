@@ -15,6 +15,9 @@ Since this was a research project, the main goal was to build skills and knowled
 - Checksums / error correction codes need to have very large redundancy to be effective
   - In our scenario, checksums were simple enough than many random images had "valid" barcodes
 - Rotating an image to scan it multiple times is computationally expensive
+- Writing tests is cool
+- Documentation is kinda cool
+- Ignoring files that cause merge conflicts is kinda cool too
 
 ## The Specification
 
