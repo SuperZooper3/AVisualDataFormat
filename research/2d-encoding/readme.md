@@ -14,4 +14,4 @@ less useful. The enconding also doesn't include any error correction.
 ### Rotation
 
 Rotation of tags is handled by the encoder, which will assure that the code is
-valid in only one rotation and that codes will be somewhat dissimilar.
+valid in only one rotation and that codes will have a hamming distance of 3 [[1]](https://en.wikipedia.org/wiki/Hamming_distance), so being resistant to minor errors.
