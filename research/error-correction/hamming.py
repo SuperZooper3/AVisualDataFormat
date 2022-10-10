@@ -54,15 +54,15 @@ def hamming_decode(data):
     parity = dataCopy.count(1) % 2
 
     if parity == 0 and runningXOR != 0:
-        #print("At least two errors detected",runningXOR)
+        print("At least two errors detected",runningXOR)
         return -1
 
     elif runningXOR != 0:
-        #print("Error detected at bit", runningXOR)
+        print("Error detected at bit", runningXOR)
         dataCopy[runningXOR] = 0 if dataCopy[runningXOR] == 1 else 1
     
     else:
-        #print("No errors detected")
+        print("No errors detected")
         pass
 
     # Remove the parity bits from the payload
