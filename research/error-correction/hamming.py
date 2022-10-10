@@ -54,8 +54,8 @@ def hamming_decode(data):
     parity = dataCopy.count(1) % 2
 
     if parity == 0 and runningXOR != 0:
-        print("At least two errors detected",runningXOR)
-        return -1
+        # According to https://stackoverflow.com/a/2807375 I should try and fail early
+        raise ValueError("Too many errors to decode")
 
     elif runningXOR != 0:
         print("Error detected at bit", runningXOR)

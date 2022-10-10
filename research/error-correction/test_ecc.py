@@ -38,5 +38,10 @@ def test_hamming_random_two_changes(tests=1000):
 
         data[n2] = 0 if data[n2] == 1 else 1
 
-        assert hamming.hamming_decode(data) == -1
+        # except an error
+        try:
+            hamming.hamming_decode(data)
+            assert False
+        except ValueError:
+            pass
 
