@@ -3,11 +3,11 @@ from math import ceil, log2
 # A very basic implementation of the Hamming code function in Python
 
 # https://stackoverflow.com/a/57025941
-def power_of_two(n):
+def is_power_of_two(n):
     return (n & (n-1) == 0) and n != 0 
 
 def is_paritity_bit(i):
-    return i == 0 or power_of_two(i)
+    return i == 0 or is_power_of_two(i)
 
 def hamming_encode(payload):
     # Step 1: Load all of the payload into a data list, leaving spaces for parity bits
