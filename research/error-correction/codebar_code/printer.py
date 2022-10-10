@@ -20,7 +20,7 @@ def codePrint(digits, filename, type = "ascii"):
     horizontal_pixels = []
 
     # Pad digits to the left to reach the closest byte
-    digits = [0] * ((8 - (len(digits) % 8))%8) + digits
+    digits =  [0] * ((8 - len(digits)) % 8)  + digits
 
     # Make sure the data will fit inside the max size
     assert(len(digits)//8 < max_data_size)

@@ -54,7 +54,7 @@ def hamming_decode(data):
     parity = dataCopy.count(1) % 2
 
     if parity == 0 and runningXOR != 0:
-        #print("At least two errors detected")
+        #print("At least two errors detected",runningXOR)
         return -1
 
     elif runningXOR != 0:
@@ -68,3 +68,8 @@ def hamming_decode(data):
     # Remove the parity bits from the payload
     payload = [dataCopy[i] for i in range(len(dataCopy)) if not is_paritity_bit(i)]
     return payload
+
+if __name__ == "__main__":
+    bits = [int(i) for i in input("Enter the bits to encode: ")]
+    print("Encoded bits:", hamming_encode(bits))
+    print("Decoded bits:", hamming_decode(hamming_encode(bits)))
