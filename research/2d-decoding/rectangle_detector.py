@@ -143,8 +143,11 @@ def readImage(filename):
             plt.plot(*rect[i], marker="o", markersize=5, markeredgecolor="red", markerfacecolor="red")
         print("Rect done")
     print("Showing")
+
+    # Flip the y axis so that the origin is in the top left
+    plt.gca().invert_yaxis()
     plt.show()
         
 
 if __name__ == "__main__":
-    readImage("testImage.png")
+    readImage("printed.png")
