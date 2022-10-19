@@ -74,21 +74,6 @@ def readImage(filename):
                 groups.append({(x, y)})
     print(len(groups), "groups")
     print(sum([len(a) for a in groups]), "pixels")
-    print("Plotting")
-    for group in groups:
-        for point in group:
-            plt.plot(*point, marker="o", markersize=1, markeredgecolor="black", markerfacecolor="black")
-        # Printing the bounding boxes
-        minX, maxX = min(group, key = lambda a: a[0])[0]-1, max(group, key = lambda a: a[0])[0]+1
-        minY, maxY = min(group, key = lambda a: a[1])[1]-1, max(group, key = lambda a: a[1])[1]+1
-        plt.plot(list(range(minX, maxX+1)), [maxY]*(maxX-minX+1), color='red', linewidth=1)
-        plt.plot(list(range(minX, maxX+1)), [minY]*(maxX-minX+1), color='red', linewidth=1)
-        plt.plot([maxX]*(maxY-minY+1), list(range(minY, maxY+1)), color='red', linewidth=1)
-        plt.plot([minX]*(maxY-minY+1), list(range(minY, maxY+1)), color='red', linewidth=1)
-        print("Group done")
-    print("Showing")
-    plt.gca().invert_yaxis()
-    plt.show()
 
     rects = set()
     for group in groups:
@@ -108,6 +93,8 @@ def readImage(filename):
             for x in range(maxY[0], maxX[0]+1):
                 y = round(line(x))
                 for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
+                    if y+offset < 0 or y+offset >= len(pixels):
+                        continue
                     if pixels[y+offset][x] == 0:
                         break
                 else: # If no pixels within the tolerance are white, then the line isn't continuous, so this group isn't a rectangle
@@ -124,6 +111,8 @@ def readImage(filename):
                 for x in range(minX[0], maxY[0]+1):
                     y = round(line(x))
                     for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
+                        if y+offset < 0 or y+offset >= len(pixels):
+                            continue
                         if pixels[y+offset][x] == 0:
                             break
                     else: # If no pixels within the tolerance are white, then the line isn't continuous, so this group isn't a rectangle
@@ -132,6 +121,8 @@ def readImage(filename):
             else:
                 for y in range(minX[1], maxY[1]+1):
                     for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
+                        if minX[0]+offset < 0 or minX[0]+offset >= len(pixels[minX[0]]):
+                            continue
                         if pixels[y+offset][minX[0]+offset] == 0:
                             break
                     else:
@@ -147,6 +138,8 @@ def readImage(filename):
             for x in range(minX[0], minY[0]+1):
                 y = round(line(x))
                 for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
+                    if y+offset < 0 or y+offset >= len(pixels):
+                        continue
                     if pixels[y+offset][x] == 0:
                         break
                 else: # If no pixels within the tolerance are white, then the line isn't continuous, so this group isn't a rectangle
@@ -163,6 +156,8 @@ def readImage(filename):
                 for x in range(minY[0], maxX[0]+1):
                     y = round(line(x))
                     for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
+                        if y+offset < 0 or y+offset >= len(pixels):
+                            continue
                         if pixels[y+offset][x] == 0:
                             break
                     else: # If no pixels within the tolerance are white, then the line isn't continuous, so this group isn't a rectangle
@@ -171,6 +166,8 @@ def readImage(filename):
             else:
                 for y in range(minY[1], maxX[1]+1):
                     for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
+                        if minY[0]+offset < 0 or minY[0]+offset >= len(pixels[minY[0]]):
+                            continue
                         if pixels[y][minY[0]+offset] == 0:
                             break
                     else:
