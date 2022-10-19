@@ -3,6 +3,32 @@ import matplotlib.pyplot as plt
 
 LINE_PIXEL_TOLERANCE = 1
 
+def mins(items, key=lambda a: a):
+    items = list(items)
+    minV = key(items[0])
+    minItems = [items[0]]
+    for i in range(1, len(items)):
+        val = key(items[i])
+        if val == minV:
+            minItems.append(items[i])
+        elif val < minV:
+            minV = val
+            minItems = [items[i]]
+    return minItems
+
+def maxs(items, key=lambda a: a):
+    items = list(items)
+    maxV = key(items[0])
+    maxItems = [items[0]]
+    for i in range(1, len(items)):
+        val = key(items[i])
+        if val == maxV:
+            maxItems.append(items[i])
+        elif val > maxV:
+            maxV = val
+            maxItems = [items[i]]
+    return maxItems
+
 def readImage(filename):
     im = Image.open(filename).convert("L")
     w,h = im.size
@@ -48,27 +74,33 @@ def readImage(filename):
                 groups.append({(x, y)})
     print(len(groups), "groups")
     print(sum([len(a) for a in groups]), "pixels")
-    # print("Plotting")
-    # for group in groups:
-    #     for point in group:
-    #         plt.plot(*point, marker="o", markersize=1, markeredgecolor="black", markerfacecolor="black")
-    #     # Printing the bounding boxes
-    #     minX, maxX = min(group, key = lambda a: a[0])[0]-1, max(group, key = lambda a: a[0])[0]+1
-    #     minY, maxY = min(group, key = lambda a: a[1])[1]-1, max(group, key = lambda a: a[1])[1]+1
-    #     plt.plot(list(range(minX, maxX+1)), [maxY]*(maxX-minX+1), color='red', linewidth=1)
-    #     plt.plot(list(range(minX, maxX+1)), [minY]*(maxX-minX+1), color='red', linewidth=1)
-    #     plt.plot([maxX]*(maxY-minY+1), list(range(minY, maxY+1)), color='red', linewidth=1)
-    #     plt.plot([minX]*(maxY-minY+1), list(range(minY, maxY+1)), color='red', linewidth=1)
-    #     print("Group done")
-    # print("Showing")
-    # plt.show()
+    print("Plotting")
+    for group in groups:
+        for point in group:
+            plt.plot(*point, marker="o", markersize=1, markeredgecolor="black", markerfacecolor="black")
+        # Printing the bounding boxes
+        minX, maxX = min(group, key = lambda a: a[0])[0]-1, max(group, key = lambda a: a[0])[0]+1
+        minY, maxY = min(group, key = lambda a: a[1])[1]-1, max(group, key = lambda a: a[1])[1]+1
+        plt.plot(list(range(minX, maxX+1)), [maxY]*(maxX-minX+1), color='red', linewidth=1)
+        plt.plot(list(range(minX, maxX+1)), [minY]*(maxX-minX+1), color='red', linewidth=1)
+        plt.plot([maxX]*(maxY-minY+1), list(range(minY, maxY+1)), color='red', linewidth=1)
+        plt.plot([minX]*(maxY-minY+1), list(range(minY, maxY+1)), color='red', linewidth=1)
+        print("Group done")
+    print("Showing")
+    plt.gca().invert_yaxis()
+    plt.show()
 
     rects = set()
     for group in groups:
         nottaSquare = False
-        # Find the pixels with the biggest and smallest x and y values
-        minX, maxX = min(group, key = lambda a: a[0]), max(group, key = lambda a: a[0])
-        minY, maxY = min(group, key = lambda a: a[1]), max(group, key = lambda a: a[1])
+        # Find the pixels with the biggest and smallest x and y values, if more than 1 pixel have the smallest x, then take the one with the smallest y
+        # Biggest y we take the smallest x, biggest x we take the biggest y and smallest y we take the biggest x (basically rotating clockwise)
+        minX, maxX = min(mins(group, key = lambda a: a[0]), key = lambda a: a[1]), max(maxs(group, key = lambda a: a[0]), key=lambda a: a[1])
+        minY, maxY = max(mins(group, key = lambda a: a[1]), key=lambda a: a[0]), min(maxs(group, key = lambda a: a[1]), key = lambda a: a[0])
+
+        # Check that all the points are different
+        if not minX != maxX != minY != maxY:
+            continue
 
         # Line equations are y = m(x-a)+b, with A(a, b) being on the line and m being the slope
         try:
@@ -87,15 +119,24 @@ def readImage(filename):
             continue
         
         try:
-            line = lambda a: (minX[1]-maxY[1])/(minX[0]-maxY[0])*(a - minX[0]) + minX[1] # Lower left side
-            for x in range(minX[0], maxY[0]+1):
-                y = round(line(x))
-                for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
-                    if pixels[y+offset][x] == 0:
+            if minX[0]-maxY[0] != 0:
+                line = lambda a: (minX[1]-maxY[1])/(minX[0]-maxY[0])*(a - minX[0]) + minX[1] # Lower left side
+                for x in range(minX[0], maxY[0]+1):
+                    y = round(line(x))
+                    for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
+                        if pixels[y+offset][x] == 0:
+                            break
+                    else: # If no pixels within the tolerance are white, then the line isn't continuous, so this group isn't a rectangle
+                        nottaSquare = True
                         break
-                else: # If no pixels within the tolerance are white, then the line isn't continuous, so this group isn't a rectangle
-                    nottaSquare = True
-                    break
+            else:
+                for y in range(minX[1], maxY[1]+1):
+                    for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
+                        if pixels[y+offset][minX[0]+offset] == 0:
+                            break
+                    else:
+                        nottaSquare = True
+                        break
         except ZeroDivisionError:
             continue
         if nottaSquare:
@@ -117,15 +158,24 @@ def readImage(filename):
             continue
         
         try:
-            line = lambda a: (minY[1]-maxX[1])/(minY[0]-maxX[0])*(a - maxX[0]) + maxX[1] # Lower right side
-            for x in range(minY[0], maxX[0]+1):
-                y = round(line(x))
-                for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
-                    if pixels[y+offset][x] == 0:
+            if minY[0]-maxX[0] != 0:
+                line = lambda a: (minY[1]-maxX[1])/(minY[0]-maxX[0])*(a - maxX[0]) + maxX[1] # Upper right side
+                for x in range(minY[0], maxX[0]+1):
+                    y = round(line(x))
+                    for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
+                        if pixels[y+offset][x] == 0:
+                            break
+                    else: # If no pixels within the tolerance are white, then the line isn't continuous, so this group isn't a rectangle
+                        nottaSquare = True
                         break
-                else: # If no pixels within the tolerance are white, then the line isn't continuous, so this group isn't a rectangle
-                    nottaSquare = True
-                    break
+            else:
+                for y in range(minY[1], maxX[1]+1):
+                    for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
+                        if pixels[y][minY[0]+offset] == 0:
+                            break
+                    else:
+                        nottaSquare = True
+                        break
         except ZeroDivisionError:
             continue
         if nottaSquare:
