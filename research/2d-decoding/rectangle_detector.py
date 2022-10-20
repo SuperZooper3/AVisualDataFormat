@@ -183,7 +183,7 @@ def readImage(filename):
     
     # Add the image as a background to the plot
     # invert all the pixels
-    show_pixels = [[1-pixel for pixel in row][::-1] for row in pixels]
+    show_pixels = [[1-pixel for pixel in row] for row in pixels]
     plt.imshow(show_pixels, cmap='gray', interpolation='nearest')
     print(len(rects), "rectangles")
     print("Plotting")
@@ -191,11 +191,11 @@ def readImage(filename):
         for i in range(4):
             plt.plot(*rect[i], marker="o", markersize=3, markeredgecolor="red", markerfacecolor="red")
         print("Rect done")
-    print("Showing")
-
     # Flip the y axis so that the origin is in the top left
-    plt.gca().invert_yaxis()
     plt.savefig("processed.png")
+    # clear the plot
+    plt.clf()
+    print("Done")
         
 
 if __name__ == "__main__":

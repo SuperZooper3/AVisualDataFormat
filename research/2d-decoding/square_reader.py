@@ -17,7 +17,7 @@ def main():
                 if not ret:
                     print("failed to grab frame")
                     break
-                cv2.imshow("Barcode reader", frame)
+                cv2.imshow("Square reader", frame)
                 k = cv2.waitKey(1)
                 if k%256 == 27:
                     # ESC pressed
