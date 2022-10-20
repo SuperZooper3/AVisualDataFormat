@@ -72,8 +72,8 @@ def readImage(filename):
             # If the pixel is in no other groups, create a new one
             elif len(indexes) == 0:
                 groups.append({(x, y)})
-    print(len(groups), "groups")
-    print(sum([len(a) for a in groups]), "pixels")
+    #print(len(groups), "groups")
+    #print(sum([len(a) for a in groups]), "pixels")
 
     rects = set()
     for group in groups:
@@ -181,19 +181,21 @@ def readImage(filename):
         # At this point, we conclude that it's a rectangle
         rects.add((minX, minY, maxX, maxY, frozenset(group)))
     
+    # Add the image as a background to the plot
+    # invert all the pixels
+    show_pixels = [[1-pixel for pixel in row][::-1] for row in pixels]
+    plt.imshow(show_pixels, cmap='gray', interpolation='nearest')
     print(len(rects), "rectangles")
     print("Plotting")
     for rect in rects:
-        for point in rect[4]:
-            plt.plot(*point, marker="o", markersize=1, markeredgecolor="black", markerfacecolor="black")
         for i in range(4):
-            plt.plot(*rect[i], marker="o", markersize=5, markeredgecolor="red", markerfacecolor="red")
+            plt.plot(*rect[i], marker="o", markersize=3, markeredgecolor="red", markerfacecolor="red")
         print("Rect done")
     print("Showing")
 
     # Flip the y axis so that the origin is in the top left
     plt.gca().invert_yaxis()
-    plt.show()
+    plt.savefig("processed.png")
         
 
 if __name__ == "__main__":
