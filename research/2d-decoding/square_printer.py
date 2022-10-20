@@ -1,5 +1,4 @@
 # A simple program to randomly place a black hollow square with a white background
-
 import random
 from PIL import Image
 import matplotlib.pyplot as plt
