@@ -1,5 +1,6 @@
 from PIL import Image
 import matplotlib.pyplot as plt
+import cv2
 
 LINE_PIXEL_TOLERANCE = 1
 
@@ -30,16 +31,25 @@ def maxs(items, key=lambda a: a):
     return maxItems
 
 def readImage(filename):
-    im = Image.open(filename).convert("L")
+    # Clean up the image to get a nice black and white image
+    img = cv2.imread(filename)
+    # Turn it into a BW image
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # Blur filter to remove minor noise
+    blur = cv2.GaussianBlur(img,(3,3),0)
+    
+    # Threshold the image adaptively: this is convert to binary image in small chunks, choosing intermediate threshold values based on local statistics (avoids very white parts of the immage destroying everything else)
+    thresholdedImage = cv2.adaptiveThreshold(blur,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,301,2) # 301 (the block size) has been arbitrarily chosen based off, 2 is the constant to subtract from the mean, not sure what it changes
+
+    # Invert the thresholded image because black is a 1 and white is a 0
+    cv2.imwrite("thresholded.png", thresholdedImage) # FIXME: rewrite entire script to use cv2 images instead of PIL images to avoid saving
+
+    im = Image.open("thresholded.png").convert("L")
     w,h = im.size
     pixels = list(im.getdata())
 
-    # Convert all pixels to their closes 0 or 1 value, inverted because 1 is a bar and 0 is a space
+    # reduce them all to 0 or 1 and flipped
     pixels = [0 if pixel > 127 else 1 for pixel in pixels]
-
-    im = Image.new("1", (w,h), color=1)
-    im.putdata(pixels)
-    im.save("converted.png")
 
     pixels = [pixels[i:i+w] for i in range(0, len(pixels), w)]
 
