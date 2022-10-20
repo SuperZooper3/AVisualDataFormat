@@ -121,9 +121,9 @@ def readImage(filename):
             else:
                 for y in range(minX[1], maxY[1]+1):
                     for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
-                        if minX[0]+offset < 0 or minX[0]+offset >= len(pixels[minX[0]]):
+                        if minX[0]+offset < 0 or minX[0]+offset >= len(pixels[y]):
                             continue
-                        if pixels[y+offset][minX[0]+offset] == 0:
+                        if pixels[y][minX[0]+offset] == 0:
                             break
                     else:
                         nottaSquare = True
@@ -166,7 +166,7 @@ def readImage(filename):
             else:
                 for y in range(minY[1], maxX[1]+1):
                     for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
-                        if minY[0]+offset < 0 or minY[0]+offset >= len(pixels[minY[0]]):
+                        if minY[0]+offset < 0 or minY[0]+offset >= len(pixels[y]):
                             continue
                         if pixels[y][minY[0]+offset] == 0:
                             break
