@@ -1,3 +1,5 @@
+# An interface to detect rectangles in images (webcam or file)
+
 # import the opencv library for webcam access
 import cv2
 from rectangle_detector import readImage

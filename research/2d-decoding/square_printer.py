@@ -1,4 +1,5 @@
-# A simple program to randomly place a black hollow square with a white background
+# A simple program to randomly place a black hollow square with a white background for testing of the rectangle_detector.py program
+
 import random
 from PIL import Image
 import matplotlib.pyplot as plt
