@@ -53,6 +53,8 @@ def readImage(filename):
 
     pixels = [pixels[i:i+w] for i in range(0, len(pixels), w)]
 
+    minRectSurface = (w*h)*0.3/100 # A rectangle must be at least 0.3% of the image size
+
     groups = []
     for y, row in enumerate(pixels):
         for x, pixel in enumerate(row):
@@ -87,6 +89,10 @@ def readImage(filename):
 
     rects = set()
     for group in groups:
+        # Check that the group is even big enough to be considered
+        if len(group) < minRectSurface:
+            continue
+
         nottaSquare = False
         # Find the pixels with the biggest and smallest x and y values, if more than 1 pixel have the smallest x, then take the one with the smallest y
         # Biggest y we take the smallest x, biggest x we take the biggest y and smallest y we take the biggest x (basically rotating clockwise)
