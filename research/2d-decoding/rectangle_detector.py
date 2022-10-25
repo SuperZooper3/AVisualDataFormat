@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import cv2
 
 LINE_PIXEL_TOLERANCE = 1
-LINE_PARALLEL_TOLERANCE = 1
 
 def mins(items, key=lambda a: a):
     items = list(items)
