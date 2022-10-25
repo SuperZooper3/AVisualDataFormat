@@ -35,13 +35,18 @@ def maxs(items, key=lambda a: a):
 def readImage(filename):
     # Clean up the image to get a nice black and white image
     img = cv2.imread(filename)
+    w,h = img.shape[:2]
     # Turn it into a BW image
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Blur filter to remove minor noise
     blur = cv2.GaussianBlur(img,(3,3),0)
-    
+
+    block_size = int(min(w,h)/10)
+    # make block size odd
+    block_size = block_size + 1 if block_size % 2 == 0 else block_size 
+
     # Threshold the image adaptively: this is convert to binary image in small chunks, choosing intermediate threshold values based on local statistics (avoids very white parts of the immage destroying everything else)
-    thresholdedImage = cv2.adaptiveThreshold(blur,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,301,2) # 301 (the block size) has been arbitrarily chosen based off, 2 is the constant to subtract from the mean, not sure what it changes
+    thresholdedImage = cv2.adaptiveThreshold(blur,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,block_size,2) # the block size is 10% of the image min axis, 2 is the constant to subtract from the mean, not sure what it changes
 
     # Invert the thresholded image because black is a 1 and white is a 0
     cv2.imwrite("thresholded.png", thresholdedImage) # FIXME: rewrite entire script to use cv2 images instead of PIL images to avoid saving
