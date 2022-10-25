@@ -3,6 +3,7 @@
 # import the opencv library for webcam access
 import cv2
 from rectangle_detector import readImage
+from rectangle_deformer import squarifyRectangle
 
 def main():
     mode = input("Enter 'file' to read from a file, or 'webcam' to read from a webcam: ")
@@ -26,7 +27,8 @@ def main():
                     print("Escape hit, closing...")
                     break
                 cv2.imwrite("webcam.png", frame)
-                readImage("webcam.png")
+                corners = readImage("webcam.png")
+                squarifyRectangle("webcam.png", corners)
         finally:
             cam.release()
             cv2.destroyAllWindows()

@@ -219,6 +219,9 @@ def readImage(filename):
     # clear the plot
     plt.clf()
     print("Done")
+
+    # Return the rectangles as a list of lists of tuples
+    return [rect[:4] for rect in rects]
         
 
 if __name__ == "__main__":
