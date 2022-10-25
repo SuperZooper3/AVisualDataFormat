@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import cv2
 
 LINE_PIXEL_TOLERANCE = 1
+LINE_PARALLEL_TOLERANCE = 1
 
 def mins(items, key=lambda a: a):
     items = list(items)
@@ -91,8 +92,6 @@ def readImage(filename):
             # If the pixel is in no other groups, create a new one
             elif len(indexes) == 0:
                 groups.append({(x, y)})
-    #print(len(groups), "groups")
-    #print(sum([len(a) for a in groups]), "pixels")
 
     rects = set()
     for group in groups:
@@ -109,30 +108,33 @@ def readImage(filename):
         # Check that all the points are different
         if not minX != maxX != minY != maxY:
             continue
-
-        # Line equations are y = m(x-a)+b, with A(a, b) being on the line and m being the slope
-        try:
-            line = lambda a: (maxY[1]-maxX[1])/(maxY[0]-maxX[0])*(a - maxX[0]) + maxX[1] # Lower right side
-            for x in range(maxY[0], maxX[0]+1):
-                y = round(line(x))
-                for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
-                    if y+offset < 0 or y+offset >= len(pixels):
-                        continue
-                    if pixels[y+offset][x] == 0:
-                        break
-                else: # If no pixels within the tolerance are white, then the line isn't continuous, so this group isn't a rectangle
-                    nottaSquare = True
-                    break
-        except ZeroDivisionError:
-            continue
-        if nottaSquare:
-            continue
         
-        try:
-            if minX[0]-maxY[0] != 0:
-                line = lambda a: (minX[1]-maxY[1])/(minX[0]-maxY[0])*(a - minX[0]) + minX[1] # Lower left side
-                for x in range(minX[0], maxY[0]+1):
-                    y = round(line(x))
+        # The following points are on the lines matching their index
+        points = [[maxY, maxX], [minX, maxY], [minX, minY], [minY, maxX]]
+
+        # Find the cartesian line equations for all the lines representing the sides of the rectangle, in the form ax+by+c=0
+        lines = [
+            [maxY[1]-maxX[1], -(maxY[0]-maxX[0])], # Lower right line
+            [minX[1]-maxY[1], -(minX[0]-maxY[0])], # Lower left side
+            [minX[1]-minY[1], -(minX[0]-minY[0])], # Upper left side
+            [minY[1]-maxX[1], -(minY[0]-maxX[0])]  # Upper right side
+        ]
+
+        # We have a and b now we need to find c, c = -(ax+by)
+        for i in range(4):
+            line = lines[i]
+            line.append(-(points[i][0][0]*line[0]+points[i][0][1]*line[1]))
+
+        # We check that the lines are continuous
+        for i in range(4):
+            line = lines[i]
+            extremities = points[i]
+
+            # Check that the line isn't vertical
+            if line[1] != 0:
+                for x in range(extremities[0][0], extremities[1][0]+1):
+                    # y = -(ax+c)/b
+                    y = round(-(line[0]*x+line[2])/line[1])
                     for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
                         if y+offset < 0 or y+offset >= len(pixels):
                             continue
@@ -141,68 +143,22 @@ def readImage(filename):
                     else: # If no pixels within the tolerance are white, then the line isn't continuous, so this group isn't a rectangle
                         nottaSquare = True
                         break
-            else:
-                for y in range(minX[1], maxY[1]+1):
+            else: # The line is vertical, and the x is equal to the x of one of the points on the line
+                x = extremities[0][0]
+                for y in range(extremities[0][1], extremities[1][1]+1):
                     for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
-                        if minX[0]+offset < 0 or minX[0]+offset >= len(pixels[y]):
+                        if x+offset < 0 or x+offset >= len(pixels[y]):
                             continue
-                        if pixels[y][minX[0]+offset] == 0:
+                        if pixels[y][x+offset] == 0:
                             break
                     else:
                         nottaSquare = True
                         break
-        except ZeroDivisionError:
-            continue
-        if nottaSquare:
-            continue
-
-        try:
-            line = lambda a: (minX[1]-minY[1])/(minX[0]-minY[0])*(a - minX[0]) + minX[1] # Upper left side
-            for x in range(minX[0], minY[0]+1):
-                y = round(line(x))
-                for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
-                    if y+offset < 0 or y+offset >= len(pixels):
-                        continue
-                    if pixels[y+offset][x] == 0:
-                        break
-                else: # If no pixels within the tolerance are white, then the line isn't continuous, so this group isn't a rectangle
-                    nottaSquare = True
-                    break
-        except ZeroDivisionError:
-            continue
-        if nottaSquare:
-            continue
-        
-        try:
-            if minY[0]-maxX[0] != 0:
-                line = lambda a: (minY[1]-maxX[1])/(minY[0]-maxX[0])*(a - maxX[0]) + maxX[1] # Upper right side
-                for x in range(minY[0], maxX[0]+1):
-                    y = round(line(x))
-                    for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
-                        if y+offset < 0 or y+offset >= len(pixels):
-                            continue
-                        if pixels[y+offset][x] == 0:
-                            break
-                    else: # If no pixels within the tolerance are white, then the line isn't continuous, so this group isn't a rectangle
-                        nottaSquare = True
-                        break
-            else:
-                for y in range(minY[1], maxX[1]+1):
-                    for offset in range(-LINE_PIXEL_TOLERANCE, LINE_PIXEL_TOLERANCE+1):
-                        if minY[0]+offset < 0 or minY[0]+offset >= len(pixels[y]):
-                            continue
-                        if pixels[y][minY[0]+offset] == 0:
-                            break
-                    else:
-                        nottaSquare = True
-                        break
-        except ZeroDivisionError:
-            continue
-        if nottaSquare:
-            continue
-        
-        # At this point, we conclude that it's a rectangle
-        rects.add((minX, minY, maxX, maxY, frozenset(group)))
+            if nottaSquare:
+                break
+        else:
+            # At this point, we conclude that it's a rectangle
+            rects.add((minX, minY, maxX, maxY, frozenset(group)))
     
     # Add the image as a background to the plot
     # invert all the pixels
