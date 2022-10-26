@@ -2,6 +2,7 @@
 
 import cv2
 import numpy as np
+import os
 
 outputSize = 200 # The size of the ouput square immage
 
@@ -47,6 +48,11 @@ def squarifyRectangle(imageName, rectangleCoordinates): # Where rectangleCoordin
 
     # Make the mapped coordinates matrix (where the corners will be mapped to in the output image)
     mappedCoordinates = np.float32([[0,0],[outputSize,0],[0,outputSize],[outputSize,outputSize]])
+    
+    # Clear out the deformed folder 
+    for filename in os.listdir("deformed"):
+        if filename.endswith(".png"):
+            os.remove("deformed/" + filename)
 
     # Transform each rectangle
     for i, rectangle in enumerate(adjustedCoordinates):
