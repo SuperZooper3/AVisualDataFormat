@@ -4,12 +4,18 @@
 import cv2
 from rectangle_detector import readImage
 from rectangle_deformer import squarifyRectangle
+from square_decoder import decode_square
+
+def process(filename):
+    corners = readImage(filename)
+    squarifyRectangle(filename, corners)
+    decode_square(directory="deformed")
 
 def main():
     mode = input("Enter 'file' to read from a file, or 'webcam' to read from a webcam: ")
     if mode == "file":
         filename = input("Enter the filename: ")
-        readImage(filename)
+        process(filename)
     elif mode == "webcam":
         cam = cv2.VideoCapture(0)
         cv2.namedWindow("Square reader")
@@ -30,8 +36,7 @@ def main():
                     # Space pressed
                     cv2.imwrite("webcam.png", frame)
                     print("Capture taken, processing...")
-                    corners = readImage("webcam.png")
-                    squarifyRectangle("webcam.png", corners)
+                    process("webcam.png")
         finally:
             cam.release()
             cv2.destroyAllWindows()
