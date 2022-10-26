@@ -39,8 +39,8 @@ def squarifyRectangle(imageName, rectangleCoordinates): # Where rectangleCoordin
         # Sort the points by angle
         sortedPoints = [x for _,x in sorted(zip(angles,rectangle))]
 
-        # Reorder it to be in the order: 1 2 4 3 (this just somehow apeard in my head). Ordering it to 4 3 1 2 gives a rotated image
-        sortedPoints = [sortedPoints[3], sortedPoints[2], sortedPoints[0], sortedPoints[1]]
+        # Reorder it to be in the order: 1 2 4 3 (this just somehow apeard in my head).
+        sortedPoints = [sortedPoints[0], sortedPoints[1], sortedPoints[3], sortedPoints[2]]
         
         # Append it to the list
         adjustedCoordinates.append(np.array(sortedPoints, dtype=np.float32))
@@ -57,7 +57,7 @@ def squarifyRectangle(imageName, rectangleCoordinates): # Where rectangleCoordin
         transformedImage = cv2.warpPerspective(img, transformationMatrix, (outputSize, outputSize))
 
         # Save the image
-        #cv2.imwrite(f"deformed/deformed{i}_{filenameSlug}.png", transformedImage)
-        cv2.imwrite(f"deformed.png", transformedImage)
+        cv2.imwrite(f"deformed/deformed{i}.png", transformedImage)
+        #cv2.imwrite(f"deformed.png", transformedImage)
     
     # TODO: pass this on in a better way than just saving a file :/
