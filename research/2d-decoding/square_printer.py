@@ -55,4 +55,4 @@ def printDataSquare(data, filename, pxSize=1):
 if __name__ == "__main__":
     # Generate a random 25-bit string
     data = [random.randint(0, 1) for i in range(BITS_TOTAL)]
-    printDataSquare(data, "printed.png", pxSize=100)
+    printDataSquare(data, "printed.png", pxSize=10)
