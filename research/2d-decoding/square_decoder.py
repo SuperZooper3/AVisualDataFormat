@@ -44,6 +44,7 @@ def decode_square(imageName=None,directory=None,debug=False):
     MARGIN_PIXELS_CUT = int(CHUNK_MARGIN*PIXELS_PER_CHUNK)
     data = []
     for row in range(1,BITS_PER_CHUNK+1):
+        rowList = []
         for col in range(1,BITS_PER_CHUNK+1):
             # Get the chunk
             chunk = thresholdedImage[int((row)*PIXELS_PER_CHUNK)+MARGIN_PIXELS_CUT:int((row+1)*PIXELS_PER_CHUNK)-MARGIN_PIXELS_CUT,int((col)*PIXELS_PER_CHUNK)+MARGIN_PIXELS_CUT:int((col+1)*PIXELS_PER_CHUNK)-MARGIN_PIXELS_CUT]
@@ -57,15 +58,19 @@ def decode_square(imageName=None,directory=None,debug=False):
 
             # If the average is withing DECODE_TOLLERANCE of 1 it's a 1, same for 0 and if it's not in the range we assume it's not data
             if avg > 1-DECODE_TOLLERANCE:
-                data.append(1)
+                rowList.append(1)
             elif avg < DECODE_TOLLERANCE:
-                data.append(0)
+                rowList.append(0)
             else:
                 # It's outside the tollerance, it's not data
-                data.append(None)
+                return -1
+
+        data.append(rowList)
 
     # Print the data
     print("Data: "+"".join([str(i) for i in data]))
+
+    return data
 
 if __name__ == "__main__":
     # Decode all the images in the deformed folder
