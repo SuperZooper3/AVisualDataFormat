@@ -7,10 +7,12 @@ import os
 
 from standard_settings import *
 
-DECODE_TOLLERANCE = 0.2 # Between 0 and 0.5, it's the tollerance for the difference of the average pixel value of a chunk and the threshold to be considered a 1 or 0
-CHUNK_MARGIN = 0.2 # Between 0 and 0.5 (0 = no cut, 0.5 = all cut) The % to be cut off from the edges of each chunk area to avoid noise and filtering artifacts 
+DECODE_TOLLERANCE = 0.2  # Between 0 and 0.5, it's the tollerance for the difference of the average pixel value of a chunk and the threshold to be considered a 1 or 0
+# Between 0 and 0.5 (0 = no cut, 0.5 = all cut) The % to be cut off from the edges of each chunk area to avoid noise and filtering artifacts
+CHUNK_MARGIN = 0.2
 
-def decode_square(imageName=None,directory=None,debug=False):
+
+def decode_square(imageName=None, directory=None, debug=False):
     if imageName != None:
         try:
             img = cv2.imread(imageName)
@@ -21,35 +23,38 @@ def decode_square(imageName=None,directory=None,debug=False):
     else:
         for imageName in os.listdir(directory):
             if imageName.endswith(".png"):
-                decode_square(directory+ "/" + imageName, debug=debug)
+                decode_square(directory + "/" + imageName, debug=debug)
         return
 
     # Get image data
-    w,h = img.shape[:2]
-    
+    w, h = img.shape[:2]
+
     # Start by doing a global threshold on the image to get binary data
     # Blur filter to remove minor noise
-    blur = cv2.GaussianBlur(img,(3,3),0)
+    blur = cv2.GaussianBlur(img, (3, 3), 0)
 
     # Global OTSU threshold
-    otsuThold,thresholdedImage = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    otsuThold, thresholdedImage = cv2.threshold(
+        blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
     # Show the thresholded image
-    if debug: 
+    if debug:
         cv2.imshow("Thresholded", thresholdedImage)
         cv2.waitKey(0)
 
     # Go over each bit in the image (diving it into BITS_PER_CHUNK + 2 evenly sized image regions)
-    PIXELS_PER_CHUNK = w/(BITS_PER_CHUNK+2) # It's ok to have a decimal here, it means rounding won't compound
+    # It's ok to have a decimal here, it means rounding won't compound
+    PIXELS_PER_CHUNK = w/(BITS_PER_CHUNK+2)
     MARGIN_PIXELS_CUT = int(CHUNK_MARGIN*PIXELS_PER_CHUNK)
     data = []
-    for row in range(1,BITS_PER_CHUNK+1):
+    for row in range(1, BITS_PER_CHUNK+1):
         rowList = []
-        for col in range(1,BITS_PER_CHUNK+1):
+        for col in range(1, BITS_PER_CHUNK+1):
             # Get the chunk
-            chunk = thresholdedImage[int((row)*PIXELS_PER_CHUNK)+MARGIN_PIXELS_CUT:int((row+1)*PIXELS_PER_CHUNK)-MARGIN_PIXELS_CUT,int((col)*PIXELS_PER_CHUNK)+MARGIN_PIXELS_CUT:int((col+1)*PIXELS_PER_CHUNK)-MARGIN_PIXELS_CUT]
+            chunk = thresholdedImage[int((row)*PIXELS_PER_CHUNK)+MARGIN_PIXELS_CUT:int((row+1)*PIXELS_PER_CHUNK)-MARGIN_PIXELS_CUT, int(
+                (col)*PIXELS_PER_CHUNK)+MARGIN_PIXELS_CUT:int((col+1)*PIXELS_PER_CHUNK)-MARGIN_PIXELS_CUT]
             # Get the average pixel value of the chunk
-            avg = np.average(chunk) / 255 # Normalize to 0-1
+            avg = np.average(chunk) / 255  # Normalize to 0-1
 
             if debug:
                 print(avg)
@@ -71,6 +76,7 @@ def decode_square(imageName=None,directory=None,debug=False):
     print("Data: "+"".join([str(i) for i in data]))
 
     return data
+
 
 if __name__ == "__main__":
     # Decode all the images in the deformed folder

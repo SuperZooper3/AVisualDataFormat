@@ -9,7 +9,7 @@ from standard_settings import *
 
 
 def printDataSquare(data, filename, pxSize=1):
-    assert(len(data) == BITS_TOTAL)
+    assert (len(data) == BITS_TOTAL)
 
     # The size of the image
     width = (BITS_PER_CHUNK+4)*pxSize
@@ -19,7 +19,8 @@ def printDataSquare(data, filename, pxSize=1):
     pixels = [[1]*width for i in range(height)]
 
     # Chunk the data (BITS_PER_CHUNK bits per chunk)
-    chunks = [data[i:i+BITS_PER_CHUNK] for i in range(0, len(data), BITS_PER_CHUNK)]
+    chunks = [data[i:i+BITS_PER_CHUNK]
+              for i in range(0, len(data), BITS_PER_CHUNK)]
 
     def writePixel(x, y, value):
         for i in range(x, x+pxSize):
@@ -51,6 +52,7 @@ def printDataSquare(data, filename, pxSize=1):
     im = Image.new("1", (width, height), color=1)
     im.putdata([pixel for row in pixels for pixel in row])
     im.save(filename)
+
 
 if __name__ == "__main__":
     # Generate a random 25-bit string
