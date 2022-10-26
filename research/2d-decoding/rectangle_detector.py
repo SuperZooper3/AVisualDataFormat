@@ -4,7 +4,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import cv2
 
-LINE_PIXEL_TOLERANCE = 1
+LINE_PIXEL_TOLERANCE = 5
 
 def mins(items, key=lambda a: a):
     items = list(items)

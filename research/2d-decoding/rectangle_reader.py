@@ -13,7 +13,7 @@ def main():
     elif mode == "webcam":
         cam = cv2.VideoCapture(0)
         cv2.namedWindow("Square reader")
-        print("Escape to close")
+        print("Escape to close. Space to take a picture and process it.")
         try:
             while True:
                 ret, frame = cam.read()
@@ -26,9 +26,12 @@ def main():
                     # ESC pressed
                     print("Escape hit, closing...")
                     break
-                cv2.imwrite("webcam.png", frame)
-                corners = readImage("webcam.png")
-                squarifyRectangle("webcam.png", corners)
+                if k%256 == 32:
+                    # Space pressed
+                    cv2.imwrite("webcam.png", frame)
+                    print("Capture taken, processing...")
+                    corners = readImage("webcam.png")
+                    squarifyRectangle("webcam.png", corners)
         finally:
             cam.release()
             cv2.destroyAllWindows()
