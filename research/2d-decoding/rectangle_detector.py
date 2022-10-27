@@ -44,18 +44,20 @@ def readImage(filename):
     # Blur filter to remove minor noise
     blur = cv2.GaussianBlur(img, (3, 3), 0)
 
-    block_size = int(min(w, h)/10)
-    # make block size odd
-    block_size = block_size + 1 if block_size % 2 == 0 else block_size
-
     # Threshold the image adaptively: this is convert to binary image in small chunks, choosing intermediate threshold values based on local statistics (avoids very white parts of the immage destroying everything else)
-    # the block size is 10% of the image min axis, 2 is the constant to subtract from the mean, not sure what it changes
-    thresholdedImage = cv2.adaptiveThreshold(
-        blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, block_size, 2)
-    # Justification of the noisy threshold:
+    
+    # Justification of the noisy threshold you might see when looking at the thresholded images:
     #  You may see that in very same coloured regions of a picture, the thresholding might cause some binary noise to arrise
     #  This happens because there is very low contrast in the region
     #  This dosen't matter for our usecase since arround the edges of the white zones (where there is a hard black/white boundry), there is enough contrast to make the thresholding give us clear binary data, and the adaptive version means its locally clean with higher acuracy
+
+    # the block size is 10% of the image min axis, 2 is the constant to subtract from the mean, not sure what it changes
+    block_size = int(min(w, h)/10)
+    # make block size odd (required by the function)
+    block_size = block_size + 1 if block_size % 2 == 0 else block_size
+
+    thresholdedImage = cv2.adaptiveThreshold(
+        blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, block_size, 2)
 
     # Invert the thresholded image because black is a 1 and white is a 0
     # FIXME: rewrite entire script to use cv2 images instead of PIL images to avoid saving
