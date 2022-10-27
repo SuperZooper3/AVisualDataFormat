@@ -114,10 +114,13 @@ def readImage(filename):
         nottaSquare = False
         # Find the pixels with the biggest and smallest x and y values, if more than 1 pixel have the smallest x, then take the one with the smallest y
         # Biggest y we take the smallest x, biggest x we take the biggest y and smallest y we take the biggest x (basically rotating clockwise)
-        minX, maxX = min(mins(group, key=lambda a: a[0]), key=lambda a: a[1]), max(
-            maxs(group, key=lambda a: a[0]), key=lambda a: a[1])
-        minY, maxY = max(mins(group, key=lambda a: a[1]), key=lambda a: a[0]), min(
-            maxs(group, key=lambda a: a[1]), key=lambda a: a[0])
+        first = lambda a: a[0]
+        last = lambda a: a[1] 
+        
+        minX, maxX = min(mins(group, key=first), key=last), max(
+            maxs(group, key=first), key=last)
+        minY, maxY = max(mins(group, key=last), key=first), min(
+            maxs(group, key=last), key=first)
 
         # Check that all the points are different
         if not minX != maxX != minY != maxY:
