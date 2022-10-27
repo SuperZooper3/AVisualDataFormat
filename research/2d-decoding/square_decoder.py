@@ -51,8 +51,11 @@ def decode_square(imageName=None, directory=None, debug=False):
         rowList = []
         for col in range(1, BITS_PER_CHUNK+1):
             # Get the chunk
-            chunk = thresholdedImage[int((row)*PIXELS_PER_CHUNK)+MARGIN_PIXELS_CUT:int((row+1)*PIXELS_PER_CHUNK)-MARGIN_PIXELS_CUT, int(
-                (col)*PIXELS_PER_CHUNK)+MARGIN_PIXELS_CUT:int((col+1)*PIXELS_PER_CHUNK)-MARGIN_PIXELS_CUT]
+            chunkLeftX = int((row)*PIXELS_PER_CHUNK) + MARGIN_PIXELS_CUT
+            chunkRightX = int((row+1)*PIXELS_PER_CHUNK) - MARGIN_PIXELS_CUT
+            chunkTopY = int((col)*PIXELS_PER_CHUNK) + MARGIN_PIXELS_CUT
+            chunkBottomY = int((col+1)*PIXELS_PER_CHUNK) - MARGIN_PIXELS_CUT
+            chunk = thresholdedImage[chunkLeftX:chunkRightX, chunkTopY:chunkBottomY]
             # Get the average pixel value of the chunk, normalized to 0-1
             avg = np.average(chunk) / 255
 
