@@ -4,7 +4,8 @@ import cv2
 import numpy as np
 import os
 
-outputSize = 200  # The size of the ouput square immage
+# The size of the ouput square immage
+outputSize = 200
 
 
 # Where rectangleCoordinates is a list of lists of 2-tuples for coordinates (list of corners)

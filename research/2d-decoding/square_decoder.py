@@ -53,8 +53,8 @@ def decode_square(imageName=None, directory=None, debug=False):
             # Get the chunk
             chunk = thresholdedImage[int((row)*PIXELS_PER_CHUNK)+MARGIN_PIXELS_CUT:int((row+1)*PIXELS_PER_CHUNK)-MARGIN_PIXELS_CUT, int(
                 (col)*PIXELS_PER_CHUNK)+MARGIN_PIXELS_CUT:int((col+1)*PIXELS_PER_CHUNK)-MARGIN_PIXELS_CUT]
-            # Get the average pixel value of the chunk
-            avg = np.average(chunk) / 255  # Normalize to 0-1
+            # Get the average pixel value of the chunk, normalized to 0-1
+            avg = np.average(chunk) / 255
 
             if debug:
                 print(avg)
@@ -73,7 +73,7 @@ def decode_square(imageName=None, directory=None, debug=False):
         data.append(rowList)
 
     # Print the data
-    print("Data: "+"".join([str(i) for i in data]))
+    print(f"Data: {''.join([str(i) for i in data])}")
 
     return data
 
