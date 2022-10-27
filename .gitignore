@@ -133,3 +133,5 @@ research/codebar/webcam.png
 *.png
 converted.png
 research/2d-decoding/square_corners.json
+
+!research/2d-decoding/decoding-diagram.png
