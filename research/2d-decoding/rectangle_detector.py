@@ -194,7 +194,8 @@ def readImage(filename):
     plt.clf()
     print("Done")
 
-    # Return the rectangles as a list of lists of tuples
+    # Return the list of quadrilaterals. Each quadrilateral is a list of coordinates. Each coordinate is a tuple
+    # So it's a list of lists of tuples
     return [rect[:4] for rect in rects]
 
 
