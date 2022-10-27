@@ -32,20 +32,11 @@ def printDataSquare(data, filename, pxSize=1):
         for j in range(BITS_PER_CHUNK):
             writePixel((i+2)*pxSize, (j+2)*pxSize, chunks[i][j])
 
-    # Add the bottom of the black square
+    # Add the edges
     for i in range(BITS_PER_CHUNK+4):
         writePixel(i*pxSize, (BITS_PER_CHUNK+3)*pxSize, 0)
-
-    # Add the top of the black square
-    for i in range(BITS_PER_CHUNK+4):
         writePixel(i*pxSize, 0, 0)
-
-    # Add the left side of the black square
-    for i in range(BITS_PER_CHUNK+4):
         writePixel(0, i*pxSize, 0)
-
-    # Add the right side of the black square
-    for i in range(BITS_PER_CHUNK+4):
         writePixel((BITS_PER_CHUNK+3)*pxSize, i*pxSize, 0)
 
     # Save the image to printed.png
