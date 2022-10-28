@@ -181,18 +181,18 @@ def readImage(filename):
     # invert all the pixels
     show_pixels = [[1-pixel for pixel in row] for row in pixels]
     plt.imshow(show_pixels, cmap='gray', interpolation='nearest')
-    print(len(rects), "rectangles")
-    print("Plotting")
+    print(f"{len(rects)} rectangles")
+    #print("Plotting")
     for rect in rects:
         for i in range(4):
             plt.plot(*rect[i], marker="o", markersize=3,
                      markeredgecolor="red", markerfacecolor="red")
-        print("Rect done")
+        #print("Rect done")
     # Flip the y axis so that the origin is in the top left
     plt.savefig("processed.png")
     # clear the plot
     plt.clf()
-    print("Done")
+    #print("Done")
 
     # Return the list of quadrilaterals. Each quadrilateral is a list of coordinates. Each coordinate is a tuple
     # So it's a list of lists of tuples

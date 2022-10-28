@@ -21,10 +21,27 @@ def decode_square(imageName=None, directory=None, debug=False):
         except:
             return
     else:
+        data = []
         for imageName in os.listdir(directory):
             if imageName.endswith(".png"):
-                decode_square(directory + "/" + imageName, debug=debug)
-        return
+                extracted = decode_square(directory + "/" + imageName, debug=debug)
+
+                # If it's -1 then it's garbage
+                if extracted == -1:
+                    continue
+
+                # If the data is all the same (ie all 1 or 0), then it's garbage
+                total_set = set()
+                for l in extracted:
+                    total_set = total_set.union(set(l))
+                if len(total_set) == 1:
+                    continue
+
+                # Otherise it's probably real data
+                data.append(extracted)
+        
+        print(f"Found {len(data)} images with data. Data: {data}")
+        return data
 
     # Get image data
     w, h = img.shape[:2]
@@ -76,7 +93,7 @@ def decode_square(imageName=None, directory=None, debug=False):
         data.append(rowList)
 
     # Print the data
-    print(f"Data: {''.join([str(i) for i in data])}")
+    #print(f"Data: {''.join([str(i) for i in data])}")
 
     return data
 
