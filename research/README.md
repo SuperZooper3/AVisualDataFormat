@@ -2,8 +2,8 @@
 
 This directory contains our research into data encoding.
 
-`2d-decoding`: Decoding 2D data, including rectangle detection
-`2d-encoding`: TODO
+`2d-decoding`: Rectangle detection
+`2d-data`: 2D data processing
 `codebar`: Decoding 1D barcodes
 `error-correction`: Error correction
 
@@ -26,4 +26,3 @@ as opposed to
 ```python
 import 2d-decoding
 ```
-
