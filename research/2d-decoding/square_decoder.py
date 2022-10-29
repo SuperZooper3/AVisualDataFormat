@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import os
 
-from standard_settings import *
+from .standard_settings import *
 
 DECODE_TOLLERANCE = 0.2  # Between 0 and 0.5, it's the tollerance for the difference of the average pixel value of a chunk and the threshold to be considered a 1 or 0
 # Between 0 and 0.5 (0 = no cut, 0.5 = all cut) The % to be cut off from the edges of each chunk area to avoid noise and filtering artifacts

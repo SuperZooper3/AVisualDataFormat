@@ -9,7 +9,7 @@ def decode(data: list, type = "utf8"):
         # decode the bytes object into a string
         try:
             return b.decode("utf-8")
-        except:
+        except UnicodeDecodeError:
             return "Error decoding string"
 
     if type == "num": # if we have a number

@@ -5,7 +5,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import json
 
-from standard_settings import *
+from .standard_settings import *
 
 
 def printDataSquare(data, filename, pxSize=1):

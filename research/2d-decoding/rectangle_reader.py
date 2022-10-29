@@ -2,15 +2,15 @@
 
 # import the opencv library for webcam access
 import cv2
-from rectangle_detector import readImage
-from rectangle_deformer import squarifyRectangle
-from square_decoder import decode_square
+from .rectangle_detector import readImage
+from .rectangle_deformer import squarifyRectangle
+from .square_decoder import decode_square
 
 
 def process(filename):
     corners = readImage(filename)
     squarifyRectangle(filename, corners)
-    decode_square(directory="deformed")
+    decode_square(directory="2d-decoding/deformed")
 
 
 def main():
