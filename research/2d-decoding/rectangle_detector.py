@@ -50,21 +50,6 @@ def collapseEquivalences(equivalences, point, root, toResolve):
             collapseEquivalences(equivalences, child, root, toResolve)
     return toResolve
 
-test_equivalences = {
-    1: [2],
-    2: [1,8],
-    8: [2,7,6],
-    7: [8],
-    6: [8,9],
-    9: [6],
-    3: [],
-    4: [5],
-    5: [4],
-    123123: [123123],
-}
-
-newResolve = collapseEquivalences(test_equivalences, 1, 1,{point:True for point in test_equivalences})
-
 def readImage(filename):
     # Clean up the image to get a nice black and white image
     img = cv2.imread(filename)
@@ -174,7 +159,6 @@ def readImage(filename):
     groupCounter = 0
     rects = set()
     for group in groups:
-        print(f"Zones processed: {groupCounter}")
         groupCounter += 1
         # Check that the group is even big enough to be considered
         if len(group) < minRectSurface:
