@@ -12,6 +12,8 @@ except ValueError:
 
 # Encode a message
 if choice == 1:
+    data_size = int(input("With what edge size is the data: "))
+
     sqr_printer = importlib.import_module("2d-decoding.square_printer")
     from codebar import encode
 
@@ -21,22 +23,25 @@ if choice == 1:
     except ValueError:
         print("Not an integer lol")
         exit(1)
-    vmax = sqr_printer.BITS_TOTAL
+
+    vmax = data_size**2
     # Pad zeroes
     if len(encoded_msg) < vmax:
         encoded_msg = [0] * (vmax - len(encoded_msg)) + encoded_msg
     else:
-        print(f"Bit limit ({sqr_printer.BITS_TOTAL}) exceeded")
+        print(f"Bit limit ({data_size**2}) exceeded")
         exit(2)
 
     path = input("Enter file path: ")
-    sqr_printer.printDataSquare(encoded_msg, path, pxSize=20)
+    sqr_printer.printDataSquare(encoded_msg, path, pxSize=20, edgeData=data_size)
     print("Done!")
     print("You can check the file at", path)
 
 elif choice == 2:
+    data_size = int(input("With what edge size is the data: "))
+
     rect_read = importlib.import_module("2d-decoding.rectangle_reader")
-    rect_read.main()
+    rect_read.main(data_size = data_size)
 
 
 else:

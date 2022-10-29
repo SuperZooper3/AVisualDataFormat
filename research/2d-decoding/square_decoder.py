@@ -12,7 +12,7 @@ DECODE_TOLLERANCE = 0.2  # Between 0 and 0.5, it's the tollerance for the differ
 CHUNK_MARGIN = 0.2
 
 
-def decode_square(imageName=None, directory=None, debug=False):
+def decode_square(data_size=BITS_PER_CHUNK, imageName=None, directory=None, debug=False, ):
     if imageName != None:
         try:
             img = cv2.imread(imageName)
@@ -24,7 +24,7 @@ def decode_square(imageName=None, directory=None, debug=False):
         data = []
         for imageName in os.listdir(directory):
             if imageName.endswith(".png"):
-                extracted = decode_square(directory + "/" + imageName, debug=debug)
+                extracted = decode_square(data_size = data_size, imageName = directory + "/" + imageName, debug=debug)
 
                 # If it's -1 then it's garbage
                 if extracted == -1:
@@ -59,20 +59,29 @@ def decode_square(imageName=None, directory=None, debug=False):
         cv2.imshow("Thresholded", thresholdedImage)
         cv2.waitKey(0)
 
-    # Go over each bit in the image (diving it into BITS_PER_CHUNK + 2 evenly sized image regions)
+    # Go over each bit in the image (diving it into data_size + 2 evenly sized image regions)
     # It's ok to have a decimal here, it means rounding won't compound
-    PIXELS_PER_CHUNK = w/(BITS_PER_CHUNK+2)
+    PIXELS_PER_CHUNK = w/(data_size+2)
     MARGIN_PIXELS_CUT = int(CHUNK_MARGIN*PIXELS_PER_CHUNK)
     data = []
-    for row in range(1, BITS_PER_CHUNK+1):
+    for row in range(1, data_size+1):
         rowList = []
-        for col in range(1, BITS_PER_CHUNK+1):
+        for col in range(1, data_size+1):
             # Get the chunk
             chunkLeftX = int((row)*PIXELS_PER_CHUNK) + MARGIN_PIXELS_CUT
             chunkRightX = int((row+1)*PIXELS_PER_CHUNK) - MARGIN_PIXELS_CUT
             chunkTopY = int((col)*PIXELS_PER_CHUNK) + MARGIN_PIXELS_CUT
             chunkBottomY = int((col+1)*PIXELS_PER_CHUNK) - MARGIN_PIXELS_CUT
             chunk = thresholdedImage[chunkLeftX:chunkRightX, chunkTopY:chunkBottomY]
+            # Show each chunk
+            # put points on the orignal image to show where we're looking
+            # n = thresholdedImage.copy()
+            # cv2.circle(n, (chunkLeftX, chunkTopY), 5, (0, 0, 255), -1)
+            # cv2.circle(n, (chunkRightX, chunkBottomY), 5, (0, 0, 255), -1)
+            # cv2.imshow("Thresholded", n)
+            
+            # cv2.imshow("Chunk", chunk)
+            # cv2.waitKey(0)
             # Get the average pixel value of the chunk, normalized to 0-1
             avg = np.average(chunk) / 255
 

@@ -5,13 +5,16 @@ import cv2
 from .rectangle_detector import readImage
 from .rectangle_deformer import squarifyRectangle
 from .square_decoder import decode_square
+from .standard_settings import *
 import numpy as np
 
 
-def process(filename, tryAgain = True):
+
+def process(filename, data_size, tryAgain = True):
+    print(data_size)
     corners = readImage(filename)
     squarifyRectangle(filename, corners)
-    out_data = decode_square(directory="2d-decoding/deformed")
+    out_data = decode_square(data_size = data_size, directory="2d-decoding/deformed")
     if len(out_data) == 0 and tryAgain:
         # If data isn't found, mabye the rectangle algorithm failed, try again with a 45 degree rotation
         # Taken from https://pyimagesearch.com/2017/01/02/rotate-images-correctly-with-opencv-and-python/
@@ -33,15 +36,15 @@ def process(filename, tryAgain = True):
         # perform the actual rotation and return the image
         img =  cv2.warpAffine(img, M, (nW, nH))
         cv2.imwrite("rotated.png", img)
-        process("rotated.png", tryAgain=False)
+        process("rotated.png", data_size, tryAgain=False)
 
 
-def main():
+def main(data_size = BITS_PER_CHUNK):
     mode = input(
         "Enter 'file' to read from a file, or 'webcam' to read from a webcam: ")
     if mode == "file":
         filename = input("Enter the filename: ")
-        process(filename)
+        process(filename, data_size)
     elif mode == "webcam":
         cam = cv2.VideoCapture(0)
         cv2.namedWindow("Square reader")
@@ -62,7 +65,7 @@ def main():
                     # Space pressed
                     cv2.imwrite("webcam.png", frame)
                     print("Capture taken, processing...")
-                    process("webcam.png")
+                    process("webcam.png", data_size)
         finally:
             cam.release()
             cv2.destroyAllWindows()
