@@ -1,5 +1,5 @@
 import importlib
-
+import os
 
 print("What do you want to do?")
 print("[1] Encode a message")
@@ -12,25 +12,20 @@ except ValueError:
 
 # Encode a message
 if choice == 1:
-    data_size = int(input("With what edge size is the data: "))
+    data_size = int(os.getenv("QR_BITS_PER_CHUNK", 5))
 
     sqr_printer = importlib.import_module("2d-decoding.square_printer")
-    from codebar import encode
 
     msg = input("Enter an integer: ")
     try:
-        encoded_msg = encode.encode(int(msg), type="num")
+        n = int(msg)
     except ValueError:
         print("Not an integer lol")
         exit(1)
 
-    vmax = data_size**2
-    # Pad zeroes
-    if len(encoded_msg) < vmax:
-        encoded_msg = [0] * (vmax - len(encoded_msg)) + encoded_msg
-    else:
-        print(f"Bit limit ({data_size**2}) exceeded")
-        exit(2)
+    from encoding_2d_data import encode
+    encoded_msg = encode.encode(int(msg))
+
 
     path = input("Enter file path: ")
     sqr_printer.printDataSquare(encoded_msg, path, pxSize=20, edgeData=data_size)
@@ -38,10 +33,13 @@ if choice == 1:
     print("You can check the file at", path)
 
 elif choice == 2:
-    data_size = int(input("With what edge size is the data: "))
+    data_size = int(os.getenv("QR_BITS_PER_CHUNK", 5))
 
     rect_read = importlib.import_module("2d-decoding.rectangle_reader")
-    rect_read.main(data_size = data_size)
+    r = rect_read.main(data_size = data_size)
+    from encoding_2d_data import decode
+    decoded = decode.decode(r)
+    print("Decoded data:", decoded)
 
 
 else:

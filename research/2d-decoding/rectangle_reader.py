@@ -37,6 +37,7 @@ def process(filename, data_size, tryAgain = True):
         img =  cv2.warpAffine(img, M, (nW, nH))
         cv2.imwrite("rotated.png", img)
         process("rotated.png", data_size, tryAgain=False)
+    return out_data
 
 
 def main(data_size = BITS_PER_CHUNK):
@@ -44,7 +45,7 @@ def main(data_size = BITS_PER_CHUNK):
         "Enter 'file' to read from a file, or 'webcam' to read from a webcam: ")
     if mode == "file":
         filename = input("Enter the filename: ")
-        process(filename, data_size)
+        return process(filename, data_size)
     elif mode == "webcam":
         cam = cv2.VideoCapture(0)
         cv2.namedWindow("Square reader")
