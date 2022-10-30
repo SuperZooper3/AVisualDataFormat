@@ -1,5 +1,6 @@
 import importlib
 import os
+from types import GeneratorType
 
 print("What do you want to do?")
 print("[1] Encode a message")
@@ -37,6 +38,10 @@ elif choice == 2:
 
     rect_read = importlib.import_module("2d-decoding.rectangle_reader")
     r = rect_read.main(data_size = data_size)
+
+    if isinstance(r, GeneratorType):
+        r = next(r)
+
     from encoding_2d_data import decode
     decoded = decode.decode(r)
     print("Decoded data:", decoded)

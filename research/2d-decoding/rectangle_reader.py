@@ -36,7 +36,7 @@ def process(filename, data_size, tryAgain = True):
         # perform the actual rotation and return the image
         img =  cv2.warpAffine(img, M, (nW, nH))
         cv2.imwrite("rotated.png", img)
-        process("rotated.png", data_size, tryAgain=False)
+        return process("rotated.png", data_size, tryAgain=False)
     return out_data
 
 
@@ -45,7 +45,7 @@ def main(data_size = BITS_PER_CHUNK):
         "Enter 'file' to read from a file, or 'webcam' to read from a webcam: ")
     if mode == "file":
         filename = input("Enter the filename: ")
-        return process(filename, data_size)
+        yield process(filename, data_size)
     elif mode == "webcam":
         cam = cv2.VideoCapture(0)
         cv2.namedWindow("Square reader")
@@ -66,7 +66,7 @@ def main(data_size = BITS_PER_CHUNK):
                     # Space pressed
                     cv2.imwrite("webcam.png", frame)
                     print("Capture taken, processing...")
-                    process("webcam.png", data_size)
+                    yield process("webcam.png", data_size)
         finally:
             cam.release()
             cv2.destroyAllWindows()
