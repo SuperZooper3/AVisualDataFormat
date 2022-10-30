@@ -1,3 +1,7 @@
+import os
+
+width = int(os.getenv("QR_BITS_PER_CHUNK", 5))
+
 def decode(bits):
     bits = bits[0]
 
@@ -7,9 +11,13 @@ def decode(bits):
     # Correct rotation
     while not (bits[0][0] == 1 and bits[0][-1] == 1):
         bits = list(zip(*bits[::-1]))
-    
-    data = bits[1:-1]
-    data = [i[1:-1] for i in data]
-    
-    binary = "".join(map(str, [i for x in data for i in x]))
+
+    # Remove rotation bits
+    data = [b for row in bits for b in row]
+    data.pop(width**2 - 1)
+    data.pop(width**2 - width)
+    data.pop(width-1)
+    data.pop(0)
+
+    binary = "".join(map(str, data))
     return int(binary, 2)

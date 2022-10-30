@@ -9,22 +9,24 @@ def chunkify(data, chunk_size):
 
 
 def encode(data: int):
-    data_w = width - 2
+    # Length (whole square minus corners)
+    data_len = width**2 - 4
 
-    # 1. Split data into chunks
-    bins = list(map(int, bin(data)[2:].zfill(data_w**2)))
-    chunked = list(chunkify(bins, data_w))
-    if len(chunked) > data_w:
+    # 1. From number to list of 0/1
+    bins = list(map(int, [c for c in bin(data)[2:].zfill(data_len)]))
+    # 2. 
+    bins.insert(0, 1)
+    bins.insert(width-1, 1)
+    bins.insert(width**2 - width, 0)
+    bins.insert(width**2 - 1, 0)
+
+    chunked = list(chunkify(bins, width))
+    if len(chunked) > width:
         raise ValueError("Data too large")
 
     # Add Rotation Bits
-    encoded = ([[0 for _ in range(width)]]
-                + list(map(lambda x: [0] + x + [0], chunked))
-                + [[0 for _ in range(width)]])
-    encoded[0][0] = 1
-    encoded[0][-1] = 1
-    _pprint(encoded)
-    return [i for x in encoded for i in x]
+    _pprint(chunked)
+    return [i for x in chunked for i in x]
 
 def _pprint(data):
     for row in data:
