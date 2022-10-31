@@ -72,7 +72,6 @@ def squarifyRectangle(imageName, rectangleCoordinates):
 
         # Save the image
         cv2.imwrite(f"2d-decoding/deformed/deformed{i}.png", transformedImage)
-        print("Saved image")
         #cv2.imwrite(f"deformed.png", transformedImage)
 
     # TODO: pass this on in a better way than just saving a file :/

@@ -155,7 +155,7 @@ def readImage(filename):
     # Free all the data made for the group calculations
     del pixel_group, group_equivallences
 
-    print(f"White zones to process: {len(groups)}")
+    #print(f"White zones to process: {len(groups)}")
     groupCounter = 0
     rects = set()
     for group in groups:
@@ -234,7 +234,7 @@ def readImage(filename):
     # invert all the pixels
     show_pixels = [[1-pixel for pixel in row] for row in pixels]
     plt.imshow(show_pixels, cmap='gray', interpolation='nearest')
-    print(f"{len(rects)} rectangles")
+    #print(f"{len(rects)} rectangles")
     #print("Plotting")
     for rect in rects:
         for i in range(4):
