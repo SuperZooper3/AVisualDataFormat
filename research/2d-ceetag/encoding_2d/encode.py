@@ -26,7 +26,7 @@ def encode(data: int):
         raise ValueError("Data too large")
 
     # Add Rotation Bits
-    _pprint(chunked)
+    #_pprint(chunked)
     return [i for x in chunked for i in x]
 
 def _pprint(data):
