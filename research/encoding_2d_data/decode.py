@@ -9,8 +9,13 @@ def decode(allBits):
         bits = list(map(lambda x: x[::-1], bits))
         
         # Correct rotation
-        while not (bits[0][0] == 1 and bits[0][-1] == 1):
+        rotations = 0
+        while not (bits[0][0] == 1 and bits[0][-1] == 1) and rotations < 5:
             bits = list(zip(*bits[::-1]))
+            rotations += 1
+        
+        if rotations == 5: # if we rottated and didnt find anything, then it can't be properly encoded data
+            continue
 
         # Remove rotation bits
         data = [b for row in bits for b in row]
