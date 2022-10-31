@@ -1,4 +1,6 @@
-from typing import List
+import os
+
+from typing import Iterable, List
 
 # From https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0136487&type=printable
 # 9
@@ -15,15 +17,25 @@ data = """
 000000000
 """
 
-# Hardcoded for 9x9, cause floating point numbers are fun :)
-size = 81
-length = 9
+# Column size for data+checksum
+BITS_PER_CHUNK = int(os.getenv("QR_BITS_PER_CHUNK", 5))
+# Number of bits total (minus checksums)
+# rows * (cols - 2)
+MAX_BIT_SIZE = (BITS_PER_CHUNK*(BITS_PER_CHUNK-2))
+MAX_DATA = 2**MAX_BIT_SIZE
+
+# Total row width is BITS_PER_CHUNK + the 2 bits on each side for the square
+length = BITS_PER_CHUNK+4
+size = length**2
 
 # 0, 0 in top-left
 bit_set_at_position = lambda n, x, y: n & 1 << (size-(y*length + x + 1)) != 0
 bc = bit_set_at_position
 
-def checksum(cols: List[List[int]]):
+
+def checksum(cols: List[List[int]]) -> bool:
+    w = len(cols)
+
     # Check parity of each column
     parities = cols[3][:3]
     for idx, parity in enumerate(parities):
@@ -66,11 +78,28 @@ def decode(data: int):
             num = int("".join(map(lambda b: "1" if b else "0", num)), base=2)
             print("[+] Number:", num)
             break
-    
+
+def iter_bits(n: int) -> Iterable[bool]:
+    while n > 0:
+        yield n & 1 == 1
+        n >>= 1
+
+def encode(data: int):
+    if data > MAX_DATA:
+        raise ValueError(f"Data too large, max {MAX_DATA}")
+
+    final = data.to_bytes(length=(MAX_BIT_SIZE//8)+1, byteorder="big")
+    print(bin(int(final.hex(), base=16)))
+    print(list(iter_bits(data)))
+    return final
+
 
 def main():
-    num = int(data.replace("\n", ""), base=2)
-    decode(num)
+    data = 18242
+    print(encode(data))
+
+    # num = int(data.replace("\n", ""), base=2)
+    # decode(num)
 
 if __name__ == "__main__":
     main()

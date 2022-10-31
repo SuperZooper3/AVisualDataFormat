@@ -35,6 +35,21 @@ def maxs(items, key=lambda a: a):
     return maxItems
 
 
+def collapseEquivalences(equivalences, point, root, toResolve):
+    toResolve[point] = False
+    children = equivalences[point]
+    equivalences[point] = [root]
+    if children != []:
+        for child in children:
+            toResolve[child] = False
+            # Remove the origin from the child's children
+            try:
+                equivalences[child].remove(point)
+            except:
+                pass
+            collapseEquivalences(equivalences, child, root, toResolve)
+    return toResolve
+
 def readImage(filename):
     # Clean up the image to get a nice black and white image
     img = cv2.imread(filename)
@@ -75,38 +90,76 @@ def readImage(filename):
     # A rectangle must be at least 0.3% of the image size
     minRectSurface = (w*h)*0.3/100
 
-    groups = []
+    pixel_group = [] # 2d array of each group, -1 means no group assinged
+    # Populate the groups
+    for y in range(h):
+        pixel_group.append([])
+        for x in range(w):
+            pixel_group[-1].append(-1)
+
+    group_equivallences = {}
+    group_count = 0 # The number of groups taken into account
     for y, row in enumerate(pixels):
         for x, pixel in enumerate(row):
             if pixel == 1:
                 continue
             indexes = set()
             # Check the pixel above and the one to the left and check their groups
-            if y-1 >= 0:
-                for index, group in enumerate(groups):
-                    if (x, y-1) in group:
-                        group.add((x, y))
-                        indexes.add(index)
-                        break
-            if x-1 >= 0:
-                for index, group in enumerate(groups):
-                    if (x-1, y) in group:
-                        group.add((x, y))
-                        indexes.add(index)
-                        break
-            # If the pixel connects 2 groups, merge them
-            if len(indexes) == 2:
-                newGroups = [groups[i] for i in indexes]
-                groups.append(newGroups[0] | newGroups[1])
-                # Remove the smaller groups, starting with the highest index to avoid off by 1 errors
-                groups.pop(max(indexes))
-                groups.pop(min(indexes))
-            # If the pixel is in no other groups, create a new one
-            elif len(indexes) == 0:
-                groups.append({(x, y)})
+            if y-1 >= 0 and pixels[y-1][x] == 0:
+                indexes.add(pixel_group[y-1][x])
+            if x-1 >= 0 and pixels[y][x-1] == 0:
+                indexes.add(pixel_group[y][x-1])
 
+            if len(indexes) == 1:
+                # If there is only one group, assign it to this pixel
+                pixel_group[y][x] = indexes.pop()
+
+            # If the pixel connects 2 groups, merge them
+            elif len(indexes) == 2:
+                a,b = min(indexes), max(indexes)
+                pixel_group[y][x] = a
+                if a not in group_equivallences.get(b, []):
+                    group_equivallences[b] = group_equivallences.get(b, []) + [a]
+                if b not in group_equivallences.get(a, []):
+                    group_equivallences[a] = group_equivallences.get(a, []) + [b]
+
+            # If the pixel is in no other groups, create a new one
+            else:
+                pixel_group[y][x] = group_count
+                group_equivallences[group_count] = []
+                group_count += 1
+
+    # Merge all the groups that are equivallent
+    allGroups = list(group_equivallences.keys())
+    toResolve = {group:True for group in allGroups}
+    roots = []
+    for group in allGroups:
+        if toResolve[group] == True:
+            roots.append(group)
+            toResolve = collapseEquivalences(group_equivallences, group, group, toResolve)
+
+    groups = {}
+    # With the collappsed equivallence table, load each group into the groups array where everything is a list of pixels
+    for y, row in enumerate(pixel_group):
+        for x, group in enumerate(row):
+            if group == -1:
+                continue
+            group = group_equivallences[group][0]
+            if group not in groups:
+                groups[group] = []
+            groups[group].append((x,y))
+
+    # Turn the dict into a list as expected
+    groups = [groups[group] for group in groups]
+
+    # Free all the data made for the group calculations
+    del pixel_group, group_equivallences
+
+    #print(f"White zones to process: {len(groups)}")
+    groupCounter = 0
     rects = set()
     for group in groups:
+        groupCounter += 1
         # Check that the group is even big enough to be considered
         if len(group) < minRectSurface:
             continue
@@ -181,7 +234,7 @@ def readImage(filename):
     # invert all the pixels
     show_pixels = [[1-pixel for pixel in row] for row in pixels]
     plt.imshow(show_pixels, cmap='gray', interpolation='nearest')
-    print(f"{len(rects)} rectangles")
+    #print(f"{len(rects)} rectangles")
     #print("Plotting")
     for rect in rects:
         for i in range(4):
