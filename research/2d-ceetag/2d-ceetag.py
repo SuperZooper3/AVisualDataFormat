@@ -1,5 +1,5 @@
 """
-2d-data.py
+2d-ceetag.py
 
 Creates a single workflow for encoding and decoding 2d data.
 Run the file and follow the prompts.
@@ -9,7 +9,7 @@ import importlib
 import os
 from types import GeneratorType
 
-from encoding_2d_data import decode, encode
+from encoding_2d import decode, encode
 
 
 print("What do you want to do?")
@@ -25,7 +25,7 @@ except ValueError:
 if choice == 1:
     data_size = int(os.getenv("QR_BITS_PER_CHUNK", 5))
 
-    sqr_printer = importlib.import_module("2d-decoding.square_printer")
+    sqr_printer = importlib.import_module("decoding_2d.square_printer")
 
     msg = input(f"Enter an integer from 0-{2**(data_size**2-4)-1}: ")
     try:
@@ -41,7 +41,6 @@ if choice == 1:
 
     encoded_msg = encode.encode(int(msg))
 
-
     path = input("Enter file path: ")
     sqr_printer.printDataSquare(encoded_msg, path, pxSize=20, edgeData=data_size)
     print("Done!")
@@ -50,7 +49,7 @@ if choice == 1:
 elif choice == 2:
     data_size = int(os.getenv("QR_BITS_PER_CHUNK", 5))
 
-    rect_read = importlib.import_module("2d-decoding.rectangle_reader")
+    rect_read = importlib.import_module("decoding_2d.rectangle_reader")
     r = rect_read.main(data_size = data_size)
 
     if isinstance(r, GeneratorType):

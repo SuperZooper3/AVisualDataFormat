@@ -56,9 +56,9 @@ def squarifyRectangle(imageName, rectangleCoordinates):
         [[0, 0], [outputSize, 0], [0, outputSize], [outputSize, outputSize]])
 
     # Clear out the deformed folder
-    for filename in os.listdir("2d-decoding/deformed"):
+    for filename in os.listdir("decoding_2d/deformed"):
         if filename.endswith(".png"):
-            os.remove("2d-decoding/deformed/" + filename)
+            os.remove("decoding_2d/deformed/" + filename)
 
     # Transform each rectangle
     for i, rectangle in enumerate(adjustedCoordinates):
@@ -71,7 +71,7 @@ def squarifyRectangle(imageName, rectangleCoordinates):
             img, transformationMatrix, (outputSize, outputSize))
 
         # Save the image
-        cv2.imwrite(f"2d-decoding/deformed/deformed{i}.png", transformedImage)
+        cv2.imwrite(f"decoding_2d/deformed/deformed{i}.png", transformedImage)
         #cv2.imwrite(f"deformed.png", transformedImage)
 
     # TODO: pass this on in a better way than just saving a file :/

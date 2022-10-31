@@ -14,7 +14,7 @@ def process(filename, data_size, tryAgain=True):
     corners = readImage(filename)
     squarifyRectangle(filename, corners)
     out_data = decode_square(
-        data_size=data_size, directory="2d-decoding/deformed")
+        data_size=data_size, directory="decoding_2d/deformed")
 
     # If data isn't found, mabye the rectangle algorithm failed, try again with a 45 degree rotation
     if len(out_data) == 0 and tryAgain:
