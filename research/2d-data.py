@@ -27,12 +27,17 @@ if choice == 1:
 
     sqr_printer = importlib.import_module("2d-decoding.square_printer")
 
-    msg = input("Enter an integer: ")
+    msg = input(f"Enter an integer from 0-{2**(data_size**2-4)-1}: ")
     try:
         n = int(msg)
     except ValueError:
         print("Not an integer lol")
         exit(1)
+
+    # Check the range
+    if n < 0 or n >= 2**(data_size**2-4):
+        print("Value out of range")
+        exit(2)
 
     encoded_msg = encode.encode(int(msg))
 
