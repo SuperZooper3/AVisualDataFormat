@@ -1,6 +1,16 @@
+"""
+2d-data.py
+
+Creates a single workflow for encoding and decoding 2d data.
+Run the file and follow the prompts.
+"""
+
 import importlib
 import os
 from types import GeneratorType
+
+from encoding_2d_data import decode, encode
+
 
 print("What do you want to do?")
 print("[1] Encode a message")
@@ -24,7 +34,6 @@ if choice == 1:
         print("Not an integer lol")
         exit(1)
 
-    from encoding_2d_data import encode
     encoded_msg = encode.encode(int(msg))
 
 
@@ -40,11 +49,11 @@ elif choice == 2:
     r = rect_read.main(data_size = data_size)
 
     if isinstance(r, GeneratorType):
-        r = next(r)
-
-    from encoding_2d_data import decode
-    decoded = decode.decode(r)
-    print("Decoded data:", decoded)
+        for v in r:
+            decoded = decode.decode(v)
+            print("Decoded data:", decoded)
+    else:
+        print("Decoded data:", decode.decode(r))
 
 
 else:

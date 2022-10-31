@@ -14,12 +14,13 @@ def encode(data: int):
 
     # 1. From number to list of 0/1
     bins = list(map(int, [c for c in bin(data)[2:].zfill(data_len)]))
-    # 2. 
+    # 2. Add rotation bits
     bins.insert(0, 1)
     bins.insert(width-1, 1)
     bins.insert(width**2 - width, 0)
     bins.insert(width**2 - 1, 0)
 
+    # 3. Chunkify
     chunked = list(chunkify(bins, width))
     if len(chunked) > width:
         raise ValueError("Data too large")

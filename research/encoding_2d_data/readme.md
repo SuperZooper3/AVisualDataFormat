@@ -2,16 +2,17 @@
 
 *BEETag but better*
 
-## Lessons learnt
+## Encoding 2D data
 
-This format of encoding is useful for small amounts of data, but becomes quite
-cumbersome for larger amounts of data. The main issue is that with larger
-square sizes, the checksum can no longer be used to detect errors and becomes
-less useful. The enconding also doesn't include any error correction.
+The data is encoded as a 1D list of binary 0s and 1s. It assumes that the data
+will be encoded in a square grid, left to right, top to bottom. The data will be
+zero-padded on the left.  
+To ensure that the data can be decoded correctly, the top left and top right
+corners will be set to 1 and hold no data.  
+The data is encoder takes in an integer which it will convert to binary.
 
-## Cool Stuff
+## Decoding 2D data
 
-### Rotation
-
-Rotation of tags is handled by the encoder, which will assure that the code is
-valid in only one rotation and that codes will have a hamming distance of 3 [[1]](https://en.wikipedia.org/wiki/Hamming_distance), so being resistant to minor errors.
+The decoder will take in a 2D array of 0s and 1s and returns an integer. The
+decoder starts of by rotating the array until the top corners are 1. It then
+removes the corners and converts the remaining binary to an integer.

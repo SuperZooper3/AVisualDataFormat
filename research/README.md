@@ -26,3 +26,7 @@ as opposed to
 ```python
 import 2d-decoding
 ```
+
+For the decoders and encoders to work properly, the `QR_BITS_PER_CHUNK`
+environment variable must be set to the same value in the encoder and decoder
+(or unset which will use the default value of 5).
