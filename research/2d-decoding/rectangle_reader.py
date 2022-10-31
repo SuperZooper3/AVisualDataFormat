@@ -9,14 +9,15 @@ from .standard_settings import *
 import numpy as np
 
 
-
-def process(filename, data_size, tryAgain = True):
-    print(data_size)
+# A function that handles the decoding chain from rectangle detection to square extraction, and decoding
+def process(filename, data_size, tryAgain=True):
     corners = readImage(filename)
     squarifyRectangle(filename, corners)
-    out_data = decode_square(data_size = data_size, directory="2d-decoding/deformed")
+    out_data = decode_square(
+        data_size=data_size, directory="2d-decoding/deformed")
+
+    # If data isn't found, mabye the rectangle algorithm failed, try again with a 45 degree rotation
     if len(out_data) == 0 and tryAgain:
-        # If data isn't found, mabye the rectangle algorithm failed, try again with a 45 degree rotation
         # Taken from https://pyimagesearch.com/2017/01/02/rotate-images-correctly-with-opencv-and-python/
         img = cv2.imread(filename)
         (h, w) = img.shape[:2]
@@ -34,13 +35,13 @@ def process(filename, data_size, tryAgain = True):
         M[0, 2] += (nW / 2) - cX
         M[1, 2] += (nH / 2) - cY
         # perform the actual rotation and return the image
-        img =  cv2.warpAffine(img, M, (nW, nH))
+        img = cv2.warpAffine(img, M, (nW, nH))
         cv2.imwrite("rotated.png", img)
         return process("rotated.png", data_size, tryAgain=False)
     return out_data
 
 
-def main(data_size = BITS_PER_CHUNK):
+def main(data_size=BITS_PER_CHUNK):
     mode = input(
         "Enter 'file' to read from a file, or 'webcam' to read from a webcam: ")
     if mode == "file":

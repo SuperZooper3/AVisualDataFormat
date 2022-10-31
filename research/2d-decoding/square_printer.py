@@ -1,13 +1,12 @@
-# A simple program to randomly place a black hollow square with a white background for testing of the rectangle_detector.py program
-
 import random
 from PIL import Image
 import matplotlib.pyplot as plt
 import json
-
 from .standard_settings import *
 
-def printDataSquare(data, filename, pxSize=1,edgeData=BITS_PER_CHUNK):
+
+# A printer for data squares. Places a black border, with a white internal border and then loads in data left to right top to bottom
+def printDataSquare(data, filename, pxSize=1, edgeData=BITS_PER_CHUNK):
     bitsTotal = edgeData**2
     assert (len(data) == bitsTotal)
 
@@ -48,4 +47,4 @@ def printDataSquare(data, filename, pxSize=1,edgeData=BITS_PER_CHUNK):
 if __name__ == "__main__":
     # Generate a random 25-bit string
     data = [random.randint(0, 1) for i in range(BITS_TOTAL)]
-    printDataSquare(data, "printed.png", pxSize=10,edgeData=BITS_PER_CHUNK)
+    printDataSquare(data, "printed.png", pxSize=10, edgeData=BITS_PER_CHUNK)
